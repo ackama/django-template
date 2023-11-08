@@ -86,7 +86,7 @@ def lint(ctx):
             return (stream,)
 
     try:
-        ctx.run("poetry run flake8 src tests", watchers=(StreamInterceptor(),))
+        ctx.run("poetry run flake8 src", watchers=(StreamInterceptor(),))
     except invoke.exceptions.UnexpectedExit:
         stdout_text = "".join(stdout_captured)
         for error_code in ("BLK100", "I001", "I003", "I004", "I004"):
@@ -209,7 +209,7 @@ def build_docs(ctx):
     Build the Codon documentation
     """
     _title("Building documentation")
-    ctx.run("poetry run mkdocs build")
+    ctx.run("poetry run mkdocs build --strict")
 
 
 ###########
