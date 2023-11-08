@@ -1,0 +1,94 @@
+[tool.poetry]
+authors = ["Jonathan Moss <xirisr@gmail.com>"]
+description = ""
+name = "django-template"
+packages = [{include = "django_template", from = "src"}]
+readme = "README.md"
+version = "0.1.0"
+
+[tool.poetry.scripts]
+manage = "django_template.manage:main"
+
+[tool.poetry.dependencies]
+django = "^4.2.0"
+django-environ = "^0.10.0"
+psycopg = "^3.1.8"
+python = "^3.11"
+uvicorn = "^0.21.0"
+uvloop = "^0.17.0"
+
+[tool.poetry.group.dev.dependencies]
+bandit = "^1.7.4"
+black = "^23.3.0"
+django-stubs = "^1.16"
+factory-boy = "^3.2.1"
+flake8 = "^6.0"
+flake8-bandit = "^4.1.1"
+flake8-black = "^0.3.3"
+flake8-bugbear = "^23.3.23"
+flake8-builtins = "^2.1.0"
+flake8-isort = "^6.0.0"
+invoke = "^2.0.0"
+ipython = "^8.12.0"
+isort = "^5.12.0"
+mkdocs = "^1.4.2"
+mkdocs-material = "^9.1"
+mkdocstrings = "^0.20.0"
+mypy = "^1"
+poetry = "^1.4.2"
+pudb = "^2022.1.3"
+pytest = "^7.2.0"
+pytest-cov = "^4.0.0"
+pytest-django = "^4.5.2"
+pytest-playwright = "^0.3.0"
+pytest-spec = "^3.2.0"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+
+# disallow_any_unimported = true
+check_untyped_defs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_ignores = true
+
+show_error_codes = true
+show_traceback = true
+
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+module = "environ"
+
+[tool.django-stubs]
+django_settings_module = "django_template.main.settings"
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "django_template.main.settings"
+addopts = "--rootdir src --spec"
+norecursedirs = ".git .venv docs data"
+spec_header_format = "{test_case} [{module_path}]:"
+
+markers = """
+    functional: functions/end-to-end tests
+    system: Regular integration and unit tests
+"""
+
+# We should never be dealing with naive datetimes. If we need to test with
+# naive datetimes, we should explicitly catch the warning in the test.
+# Otherwise, naive datetimes should raise errors.
+filterwarnings = """
+    error:.*received a naive datetime:RuntimeWarning:django.db.models.fields
+"""
+
+[tool.coverage.run]
+omit = ["**/migrations/*"]

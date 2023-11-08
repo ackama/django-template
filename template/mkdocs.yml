@@ -1,0 +1,42 @@
+site_name: django_template
+watch:
+  - src/
+  - docs/
+
+theme:
+  name: "material"
+  palette:
+    primary: "deep purple"
+    accent: "deep purple"
+  icon:
+    logo: material/duck
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - def_list
+  - toc:
+      permalink: true
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          setup_commands:
+            - import os, sys
+            - sys.path.append("src")
+            - os.environ["DJANGO_SETTINGS_MODULE"] = "{package_name}.main.settings"
+  - tags:
+      tags_file: tags.md
