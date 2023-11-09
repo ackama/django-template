@@ -1,5 +1,6 @@
-from django_template.main import views
 import json
+
+from django_template.main import views
 
 
 def test_releases_view_includes_revision_details(settings, rf):
