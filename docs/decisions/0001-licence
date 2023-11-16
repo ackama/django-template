@@ -1,0 +1,28 @@
+# 0001 Licence Adoption
+
+- Date: 2023-11-09
+- Author(s): [Jonathan Moss][jmoss]
+- Status: `Active`
+
+## Decision
+
+The 3-Clause BSD License - aligning it with Django itself.
+
+## Context
+
+Like the other Ackama templates, this one is publically available. As such the licencing 
+should be made clear for anyone who wishes to use it. 
+
+The Ruby on Rails template uses the MIT licence which aligns with the licence that Rails 
+itself is released under. 
+
+Django is released under the BSD-3-Clause licence. Both are similar and roughly equivalent.
+
+## Implications
+
+This does mean that Ackama is maintaining their templates under difference licences. But 
+both a very permissive and functionally similar. Aligning with the underlying framework and
+general preferences within the community feels like a worth while deviation. 
+
+<!-- Links -->
+[jmoss]: mailto:jonathan.moss@ackama.com

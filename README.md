@@ -16,7 +16,3 @@ This project is intended as:
 If you have ideas for improvements, open a PR with your idea or propose it in the guild channel
 
 Feature branches are encouraged, and merging should on consensus from guild
-
-## Outstanding questions
-
-Should this be open source? If so, which license?
