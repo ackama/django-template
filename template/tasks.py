@@ -7,7 +7,7 @@ import invoke
 # CONSTANTS #
 #############
 
-PACKAGE = "django_template"
+PACKAGE = "{{ project_name }}"
 
 
 @invoke.task
@@ -39,7 +39,8 @@ def typing(ctx):
     Check type annotations
     """
     _title("Type checking")
-    # PYTHONPATH must include the `src` folder for django-stubs to find the settings module
+    # PYTHONPATH must include the `src` folder for django-stubs to find the settings
+    # module
     src_path = str((pathlib.Path() / "src").absolute())
     with ctx.prefix(f"export PYTHONPATH=${{PYTHONPATH}}:{src_path}"):
         try:

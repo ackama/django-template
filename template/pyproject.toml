@@ -1,13 +1,13 @@
 [tool.poetry]
 authors = ["Jonathan Moss <xirisr@gmail.com>"]
 description = ""
-name = "django-template"
-packages = [{include = "django_template", from = "src"}]
+name = "{{ project_name }}"
+packages = [{include = "{{ project_name }}", from = "src"}]
 readme = "README.md"
 version = "0.1.0"
 
 [tool.poetry.scripts]
-manage = "django_template.manage:main"
+manage = "{{ project_name }}.manage:main"
 
 [tool.poetry.dependencies]
 django = "^4.2.7"
@@ -67,13 +67,13 @@ ignore_missing_imports = true
 module = "environ"
 
 [tool.django-stubs]
-django_settings_module = "django_template.main.settings"
+django_settings_module = "{{ project_name }}.main.settings"
 
 [tool.isort]
 profile = "black"
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "django_template.main.settings"
+DJANGO_SETTINGS_MODULE = "{{ project_name }}.main.settings"
 addopts = "--rootdir src --spec"
 norecursedirs = ".git .venv docs data"
 spec_header_format = "{test_case} [{module_path}]:"

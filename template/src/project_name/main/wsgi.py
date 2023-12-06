@@ -1,5 +1,5 @@
 """
-WSGI config for django_template project.
+WSGI config for {{ project_name }} project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_template.main.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "{{ project_name }}.main.settings")
 
 application = get_wsgi_application()

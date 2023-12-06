@@ -1,4 +1,4 @@
-site_name: django_template
+site_name: "{{ project_name }}"
 watch:
   - src/
   - docs/
@@ -37,6 +37,6 @@ plugins:
           setup_commands:
             - import os, sys
             - sys.path.append("src")
-            - os.environ["DJANGO_SETTINGS_MODULE"] = "{package_name}.main.settings"
+            - os.environ["DJANGO_SETTINGS_MODULE"] = "{{ project_name }}.main.settings"
   - tags:
       tags_file: tags.md
