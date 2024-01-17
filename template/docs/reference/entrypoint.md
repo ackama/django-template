@@ -11,7 +11,7 @@ The docker image produced by this service has a custom entrypoint (defined in
 If no operation is supplied the docker image will attempt to peform  migrations then
 starts the service.
 
-If a operation is supply then it is treated as describved below:
+If a operation is supplied then it is treated as described below:
 
 ## migrate
 
@@ -36,4 +36,4 @@ part of the docker run command, they will be forwarded on to bash itself.
 Any other value supplied as an operation will be passed directly to Django's `manage`
 command. So for example is you run with `shell`, the is the equivalent of
 `./manage.py shell`. This is handy for management commands that are intended to be used
-for _cron_ style job for example.
+for _cron_ style jobs for example.
