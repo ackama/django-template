@@ -25,7 +25,7 @@ This will ensure that the `django-admin` command is available in your shell. Fro
 you can create a new project with the following command:
 
 ```shell
-django-admin startproject --template path/to/django-template/template/ --extension py,env,toml,yml <project_name>
+django-admin startproject --template path/to/django-template/template/ --extension py,env,sh,toml,yml <project_name>
 ```
 
 !!! warn
