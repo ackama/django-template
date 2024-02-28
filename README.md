@@ -28,9 +28,9 @@ you can create a new project with the following command:
 django-admin startproject --template path/to/django-template/template/ --extension py,env,sh,toml,yml <project_name>
 ```
 
-!!! warn
-    The name of your project _must_ be a valid Python package name - that means
-    underscores (`_`) not hyphens (`-`) for name separators please.
+> [!WARNING]
+> The name of your project _must_ be a valid Python package name - that means
+> underscores (`_`) not hyphens (`-`) for name separators please.
 
 Running the Django admin command will create a new project in the folder specified in
 with `<project_name>`.
