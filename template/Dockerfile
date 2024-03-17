@@ -3,11 +3,13 @@
 
 FROM python:3.12.0-slim-bullseye as packager
 ENV PYTHONUNBUFFERED=1
-RUN pip install -U pip && pip install poetry
+RUN pip install -U pip && pip install poetry poetry-plugin-export
 COPY README.md pyproject.toml poetry.lock /source/
 COPY src /source/src/
 WORKDIR /source/
-RUN rm -rf dist && poetry build
+
+# Uses export to get a pinned list of requirements
+RUN rm -rf dist && poetry export -o requirements.txt && poetry build
 
 
 # Building Stage
@@ -22,14 +24,21 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=packager /source/dist/*.whl /
 RUN python -m venv /venv/
 
 # _activate_ the virtual environment
 ENV VIRTUAL_ENV=/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN pip install -U pip && pip install *.whl
+RUN pip install -U pip
+
+# Install pinned dependencies
+COPY --from=packager /source/requirements.txt /
+RUN pip install -r requirements.txt
+
+# Install the application itself
+COPY --from=packager /source/dist/*.whl /
+RUN pip install --no-deps *.whl
 
 # Final Runtime
 # =============
