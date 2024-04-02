@@ -46,7 +46,7 @@ on the Pyenv wiki in the [common build problems][pyenv-build] section.
 Then to install Python:
 
 ```shell
-pyenv install 3.11.2
+pyenv install 3.12.2
 ```
 
 ### Linux
@@ -68,16 +68,16 @@ section.
 Then to install Python:
 
 ```shell
-pyenv install 3.11.2
+pyenv install 3.12.2
 ```
 
 ## Preparing your Development Environment
 
-You need to start your prepartion by ensuring the correct version of Python is activated
+You need to start your preparation by ensuring the correct version of Python is activated
 in your shell.
 
 ```shell
-pyenv shell 3.11.2
+pyenv shell 3.12.2
 ```
 
 This project uses [Poetry][poetry] for Python virtual environment and dependency
@@ -115,7 +115,7 @@ This project also used [invoke][pyinvoke] for automating the various processes y
 need to do on a day to day basis. Whilst poetry is used for managing your virtual
 environment, it is handy to have invoke installed globally within you pyenv environment
 so you do not need to prefix every call with `poetry run invoke ...`. You can install it
-within the current pyenv envuironment with:
+within the current pyenv environment with:
 
 ```shell
 pip install invoke
@@ -140,7 +140,7 @@ cd django_template
 Then set the version of python you want to use for this project every time you open it:
 
 ```shell
-pyenv local 3.11.2
+pyenv local 3.12.2
 ```
 
 Take the example configuration file and make a copy for your local development:
@@ -188,7 +188,7 @@ git commit -m "Adds me to the list of humans involved in this project"
 
 This will first stage the change with the `git add` then commit to the change with the
 `git commit`. For day to day commits we would expect a little more detail in the commit
-message, but for this first day the above messsage is fine.
+message, but for this first day the above message is fine.
 
 Next we need to create a pull request so others can review and approve you change.
 
