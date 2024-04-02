@@ -8,10 +8,10 @@ tags:
 The docker image produced by this service has a custom entrypoint (defined in
 `src/entrypoint.sh`). This entry point support a small range of operations.
 
-If no operation is supplied the docker image will attempt to peform  migrations then
+If no operation is supplied the docker image will attempt to perform  migrations then
 starts the service.
 
-If a operation is supply then it is treated as describved below:
+If a operation is supply then it is treated as described below:
 
 ## migrate
 
