@@ -46,7 +46,7 @@ on the Pyenv wiki in the [common build problems][pyenv-build] section.
 Then to install Python:
 
 ```shell
-pyenv install 3.11.2
+pyenv install 3.12.2
 ```
 
 ### Linux
@@ -68,7 +68,7 @@ section.
 Then to install Python:
 
 ```shell
-pyenv install 3.11.2
+pyenv install 3.12.2
 ```
 
 ## Preparing your Development Environment
@@ -77,7 +77,7 @@ You need to start your prepartion by ensuring the correct version of Python is a
 in your shell.
 
 ```shell
-pyenv shell 3.11.2
+pyenv shell 3.12.2
 ```
 
 This project uses [Poetry][poetry] for Python virtual environment and dependency
@@ -140,7 +140,7 @@ cd django_template
 Then set the version of python you want to use for this project every time you open it:
 
 ```shell
-pyenv local 3.11.2
+pyenv local 3.12.2
 ```
 
 Take the example configuration file and make a copy for your local development:
