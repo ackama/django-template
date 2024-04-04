@@ -209,7 +209,7 @@ def build_image(ctx, tag=None, pty=True):
 @invoke.task
 def build_docs(ctx):
     """
-    Build the Codon documentation
+    Build the {{ project_name }} documentation
     """
     _title("Building documentation")
     ctx.run("poetry run mkdocs build --strict")
