@@ -215,6 +215,14 @@ def build_docs(ctx):
     ctx.run("poetry run mkdocs build --strict")
 
 
+@invoke.task
+def run_docs(ctx):
+    """
+    Run the {{ project_name }} documentation locally
+    """
+    ctx.run("poetry run mkdocs serve")
+
+
 ###########
 # HELPERS #
 ###########
