@@ -3,7 +3,8 @@ name: Continuous Integration
 on: [push]
 
 jobs:
-  static-analysis-check:
+  static-analysis-checks:
+    name: Static analysis Checks
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -20,5 +21,8 @@ jobs:
         pip install invoke poetry
         poetry install
 
-    - name: Run static analysis
-      run: poetry run invoke format
+    - name: Run linting and formatting
+      run: |
+        poetry run invoke lint
+        poetry run invoke format --check
+  
