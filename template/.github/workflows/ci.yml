@@ -1,0 +1,24 @@
+name: Continuous Integration
+
+on: [push]
+
+jobs:
+  static-analysis-check:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'poetry'
+
+    - name: Install dependencies
+      run: |
+        pip install invoke poetry
+        poetry install
+
+    - name: Run static analysis
+      run: poetry run invoke format
