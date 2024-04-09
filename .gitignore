@@ -12,3 +12,4 @@ data/
 dist/
 htmlcov/
 site/
+.DS_Store
