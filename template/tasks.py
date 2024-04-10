@@ -24,7 +24,7 @@ def help(ctx):
 
 
 @invoke.task
-def format(ctx, check:bool = False) -> None:
+def format(ctx, check: bool = False) -> None:
     """
     Apply automatic code formatting tools
 
@@ -138,9 +138,6 @@ def test(ctx, name="", verbose=False, suite=None):
     """
     Runs the test suite
     """
-
-    ctx.run("poetry run playwright install")  # ensure we have a playwright browser
-
     title_suffix = "S"
     args = ["poetry run pytest"]
     if verbose:
