@@ -72,3 +72,49 @@ jobs:
       # NOTE: it runs fine when pushing to Github, but unfortunately not in act.
       # link to issue on act repository: https://github.com/nektos/act/issues/1853
       run: TZ=UTC poetry run invoke build-docs
+
+  run-system-tests:
+    name: Run System Test Suite
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: dev
+          POSTGRES_PASSWORD: dev_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+            # Allows us to use the same env config used locally by mapping to port to
+            # the test runner container.
+            - 5432:5432
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+
+        # Project System Dependencies
+        sudo apt-get install -y \
+          build-essential \
+          libffi-dev \
+          libpq-dev
+
+        pip install invoke poetry
+        invoke install --skip-install-playwright
+        cp example.env .env
+
+    - name: Run the system test suite
+      run: poetry run invoke test --suite=system
