@@ -3,7 +3,8 @@ name: Continuous Integration
 on: [push]
 
 jobs:
-  static-analysis-check:
+  static-analysis-checks:
+    name: Static analysis Checks
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -20,5 +21,56 @@ jobs:
         pip install invoke poetry
         poetry install
 
-    - name: Run static analysis
-      run: poetry run invoke format
+    - name: Run linting and formatting
+      run: |
+        poetry run invoke lint
+        poetry run invoke format --check
+
+  type-checking:
+    name: Type Checking
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'poetry'
+
+    - name: Install dependencies
+      run: |
+        pip install invoke poetry
+        poetry install
+
+    - name: Run type-checking
+      run: poetry run invoke typing
+
+  documentation-building:
+    name: Documentation Building
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'poetry'
+
+    - name: Install dependencies
+      run: |
+        pip install invoke poetry
+        poetry install
+
+    - name: Build the documentation
+      # When running the ci locally using act, MkDocs build fails at "make html" with
+      # `ValueError: ZoneInfo keys may not be absolute paths, got: /UTC.`
+      # It seems to be a timezone related issue that arises from the interaction of the Python
+      # packages babel & zoneinfo.
+      # setting `TZ=UTC` is a work around here to bypass that error.
+      # NOTE: it runs fine when pushing to Github, but unfortunately not in act.
+      # link to issue on act repository: https://github.com/nektos/act/issues/1853
+      run: TZ=UTC poetry run invoke build-docs

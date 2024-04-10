@@ -24,13 +24,17 @@ def help(ctx):
 
 
 @invoke.task
-def format(ctx):
+def format(ctx, check:bool = False) -> None:
     """
-    Apply automatic code formating tools
+    Apply automatic code formatting tools
+
+    By default, this modifies files to match coding style guidelines.
+    When `check` is True, it performs a dry-run to identify non-compliant
+    files without applying changes.
     """
     _title("Applying code formatters ")
-    ctx.run("poetry run black src")
-    ctx.run("poetry run isort src")
+    ctx.run(f"poetry run black src{' --check' if check else ''}")
+    ctx.run(f"poetry run isort src{' --check' if check else ''}")
 
 
 @invoke.task
