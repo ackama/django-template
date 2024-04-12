@@ -18,7 +18,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install invoke poetry
-        poetry install
+        invoke install --skip-install-playwright
 
     - name: Run linting and formatting
       run: |
@@ -40,7 +40,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install invoke poetry
-        poetry install
+        invoke install --skip-install-playwright
         cp example.env .env
 
     - name: Run type-checking
@@ -61,7 +61,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install invoke poetry
-        poetry install
+        invoke install --skip-install-playwright
 
     - name: Build the documentation
       # When running the ci locally using act, MkDocs build fails at "make html" with
