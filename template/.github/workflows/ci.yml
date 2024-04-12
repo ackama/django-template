@@ -41,6 +41,7 @@ jobs:
       run: |
         pip install invoke poetry
         poetry install
+        cp example.env .env
 
     - name: Run type-checking
       run: poetry run invoke typing
