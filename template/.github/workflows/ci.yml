@@ -14,7 +14,6 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-        cache: 'poetry'
 
     - name: Install dependencies
       run: |
@@ -37,12 +36,12 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-        cache: 'poetry'
 
     - name: Install dependencies
       run: |
         pip install invoke poetry
         poetry install
+        cp example.env .env
 
     - name: Run type-checking
       run: poetry run invoke typing
@@ -58,7 +57,6 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-        cache: 'poetry'
 
     - name: Install dependencies
       run: |
