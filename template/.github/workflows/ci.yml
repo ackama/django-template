@@ -79,7 +79,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:14
+        image: postgres:16
         env:
           POSTGRES_USER: dev
           POSTGRES_PASSWORD: dev_password
@@ -125,7 +125,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:14
+        image: postgres:16
         env:
           POSTGRES_USER: dev
           POSTGRES_PASSWORD: dev_password
@@ -178,7 +178,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:14
+        image: postgres:16
         env:
           POSTGRES_USER: dev
           POSTGRES_PASSWORD: dev_password
