@@ -24,7 +24,7 @@ def help(ctx):
 
 
 @invoke.task
-def format(ctx, check:bool = False) -> None:
+def format(ctx, check: bool = False) -> None:
     """
     Apply automatic code formatting tools
 
@@ -138,9 +138,6 @@ def test(ctx, name="", verbose=False, suite=None):
     """
     Runs the test suite
     """
-
-    ctx.run("poetry run playwright install")  # ensure we have a playwright browser
-
     title_suffix = "S"
     args = ["poetry run pytest"]
     if verbose:
@@ -226,6 +223,22 @@ def run_docs(ctx):
     """
     ctx.run("poetry run mkdocs serve")
 
+
+@invoke.task
+def install(ctx, skip_install_playwright: bool = False):
+    """
+    Install system dependencies necessary for the {{ project_name }} project.
+
+    This task optionally skips the installation of Playwright dependencies,
+    which is useful for CI pipelines where Playwright is not needed,
+    thereby improving the build performance.
+    """
+    _title("Installing Dependencies")
+    ctx.run("poetry install")
+
+    if not skip_install_playwright:
+        _title("Installing Playwright Dependencies")
+        ctx.run("poetry run playwright install --with-deps")
 
 ###########
 # HELPERS #

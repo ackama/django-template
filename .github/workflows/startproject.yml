@@ -50,25 +50,8 @@ jobs:
             libffi-dev \
             libpq-dev
 
-          # Playwright System Dependencies
-          sudo apt-get install -y \
-            libnss3\
-            libnspr4\
-            libatk1.0-0\
-            libatk-bridge2.0-0\
-            libcups2\
-            libdrm2\
-            libxkbcommon0\
-            libatspi2.0-0\
-            libxcomposite1\
-            libxdamage1\
-            libxfixes3\
-            libxrandr2\
-            libgbm1\
-            libasound2
-
           # Base Python tooling
-          pip install poetry django
+          pip install invoke poetry django
 
       - name: Create test project
         run: |
@@ -80,8 +63,7 @@ jobs:
       - name: Install test project
         run: |
           cd test_project
-          poetry install
-          poetry run playwright install
+          poetry run invoke install
 
       - name: Check test project is valid
         run: |
