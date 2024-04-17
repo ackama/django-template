@@ -16,7 +16,7 @@ psycopg = "^3.1.12"
 python = "^3.12"
 uvicorn = "^0.24.0"
 uvloop = "^0.19.0"
-gunicorn = "^21.2.0"
+gunicorn = "^22.0.0"
 
 [tool.poetry.group.dev.dependencies]
 bandit = "^1.7.4"
