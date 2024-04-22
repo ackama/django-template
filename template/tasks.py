@@ -208,6 +208,32 @@ def build_image(ctx, tag=None, pty=True):
 
 
 @invoke.task
+def run_image(
+    ctx, tag: str | None = None, options: str | None = None, command: str | None = None
+):
+    """
+    Run the service Docker image
+
+    Alternatively execute input commands in the container.
+    """
+    _title("Running Docker image 🐳")
+
+    if tag is None:
+        data = _build_data(ctx)
+        tag = data.tag
+
+    if options is None:
+        options = "--env-file .env"
+
+    args = [f"docker run --rm {options} {PACKAGE}:{tag}"]
+
+    if command:
+        args.append(command)
+
+    ctx.run(" ".join(args), echo=True)
+
+
+@invoke.task
 def build_docs(ctx):
     """
     Build the {{ project_name }} documentation
@@ -239,6 +265,7 @@ def install(ctx, skip_install_playwright: bool = False):
     if not skip_install_playwright:
         _title("Installing Playwright Dependencies")
         ctx.run("poetry run playwright install --with-deps")
+
 
 ###########
 # HELPERS #
