@@ -170,3 +170,49 @@ jobs:
 
     - name: Run the functional test suite
       run: poetry run invoke test --suite=functional
+
+  build-docker-image:
+    name: Build Docker Image
+    needs: [static-analysis-checks, type-checking, run-system-tests, run-functional-tests]
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: dev
+          POSTGRES_PASSWORD: dev_password
+          POSTGRES_DB: dev
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+            # Allows us to use the same env config used locally by mapping to port to
+            # the test runner container.
+            - 5432:5432
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: pip install invoke
+
+    - name: Setup environment variables
+      run: |
+        cp example.env .env
+        echo 'DATABASE_URL=postgres://dev:dev_password@postgres:5432/dev'  >> .env
+
+    - name: Build service Docker Image
+      run: invoke build-image
+
+    - name: Run service Docker image
+      run: |
+        invoke run-image --options '--network {% verbatim %}${{ job.container.network }}{% endverbatim %} --env-file .env' --command check
