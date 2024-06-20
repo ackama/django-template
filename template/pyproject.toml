@@ -49,6 +49,7 @@ build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core"]
 
 [tool.mypy]
+strict = true
 plugins = ["mypy_django_plugin.main"]
 
 # disallow_any_unimported = true
