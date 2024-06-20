@@ -10,7 +10,7 @@ version = "0.1.0"
 manage = "{{ project_name }}.manage:main"
 
 [tool.poetry.dependencies]
-django = "^4.2.11"
+django = "^5.0"
 django-environ = "^0.11.2"
 psycopg = "^3.1.12"
 python = "^3.12"
@@ -21,7 +21,7 @@ gunicorn = "^22.0.0"
 [tool.poetry.group.dev.dependencies]
 bandit = "^1.7.4"
 black = "^24.3.0"
-django-stubs = "^4.2.6"
+django-stubs = "^5.0.2"
 factory-boy = "^3.3.0"
 flake8 = "^6.1.0"
 flake8-bandit = "^4.1.1"
@@ -40,7 +40,7 @@ poetry = "^1.7.0"
 pudb = "^2023.1"
 pytest = "^7.4.3"
 pytest-cov = "^4.1.0"
-pytest-django = "^4.7.0"
+pytest-django = "^4.8.0"
 pytest-playwright = "^0.4.3"
 pytest-spec = "^3.2.0"
 
@@ -49,6 +49,7 @@ build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core"]
 
 [tool.mypy]
+strict = true
 plugins = ["mypy_django_plugin.main"]
 
 # disallow_any_unimported = true

@@ -48,5 +48,5 @@ more details what this is actually used for and suitable values.
 - default `None`
 
 <!-- Links -->
-[allows-hosts]: https://docs.djangoproject.com/en/4.1/ref/settings/#std-setting-ALLOWED_HOSTS
-[secret-key]: https://docs.djangoproject.com/en/4.1/ref/settings/#secret-key
+[allows-hosts]: https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-ALLOWED_HOSTS
+[secret-key]: https://docs.djangoproject.com/en/5.0/ref/settings/#secret-key
