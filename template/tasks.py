@@ -308,7 +308,7 @@ def _build_data(ctx) -> BuildData:
 
     commit_hash = ctx.run("git rev-parse --short=12 HEAD", hide="stdout").stdout.strip()
     commit_time = ctx.run("git show -s --format=%ct", hide="stdout").stdout.strip()
-    commit_count = ctx.run("git rev-list --count HEAD").stdout.strip()
+    commit_count = ctx.run("git rev-list --count HEAD", hide="stdout").stdout.strip()
     return BuildData(
         branch=branch,
         commit_hash=commit_hash,
