@@ -225,12 +225,12 @@ def run_image(
     if options is None:
         options = "--env-file .env"
 
-    args = [f"docker run --rm {options} {PACKAGE}:{tag}"]
+    args = [f"docker run --rm -p 8000:8000 {options} {PACKAGE}:{tag}"]
 
     if command:
         args.append(command)
 
-    ctx.run(" ".join(args), echo=True)
+    ctx.run(" ".join(args), echo=True, pty=True)
 
 
 @invoke.task
