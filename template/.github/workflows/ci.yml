@@ -66,8 +66,8 @@ jobs:
     - name: Build the documentation
       # When running the ci locally using act, MkDocs build fails at "make html" with
       # `ValueError: ZoneInfo keys may not be absolute paths, got: /UTC.`
-      # It seems to be a timezone related issue that arises from the interaction of the Python
-      # packages babel & zoneinfo.
+      # It seems to be a timezone related issue that arises from the interaction of the
+      # Python packages babel & zoneinfo.
       # setting `TZ=UTC` is a work around here to bypass that error.
       # NOTE: it runs fine when pushing to Github, but unfortunately not in act.
       # link to issue on act repository: https://github.com/nektos/act/issues/1853
@@ -162,9 +162,10 @@ jobs:
         invoke install
         cp example.env .env
 
-      # Since there are separate jobs for running system and functional tests independently,
-      # and we use different ports to access the database, the following configuration sets up
-      # the environment variable to point to the correct database URL.
+      # Since there are separate jobs for running system and functional tests
+      # independently, and we use different ports to access the database, the following
+      # configuration sets up the environment variable to point to the correct database
+      # URL.
     - name: Set DATABASE_URL for functional tests
       run: echo "DATABASE_URL=postgres://dev:dev_password@localhost:5433/dev" >> $GITHUB_ENV
 
@@ -177,8 +178,9 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      postgres:
+      db:
         image: postgres:16
+
         env:
           POSTGRES_USER: dev
           POSTGRES_PASSWORD: dev_password
@@ -189,8 +191,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-            # Allows us to use the same env config used locally by mapping to port to
-            # the test runner container.
             - 5432:5432
 
     steps:
@@ -208,11 +208,12 @@ jobs:
     - name: Setup environment variables
       run: |
         cp example.env .env
-        echo 'DATABASE_URL=postgres://dev:dev_password@postgres:5432/dev'  >> .env
 
     - name: Build service Docker Image
       run: invoke build-image
 
     - name: Run service Docker image
+      # Since we are running the app in docker we need to ensure it attaches to the same
+      # virtual network.
       run: |
-        invoke run-image --options '--network {% verbatim %}${{ job.container.network }}{% endverbatim %} --env-file .env' --command check
+        invoke run-image --network {% verbatim %}${{ job.container.network }}{% endverbatim %} --command check

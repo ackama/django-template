@@ -241,7 +241,12 @@ def build_docs(ctx):
 
 @invoke.task
 def run_image(
-    ctx, tag: str | None = None, options: str | None = None, command: str | None = None
+    ctx,
+    tag: str | None = None,
+    network: str | None = None,
+    env_file: str | None = None,
+    database_url: str | None = None,
+    command: str | None = None,
 ):
     """
     Run the service Docker image
@@ -250,22 +255,26 @@ def run_image(
     """
     _title("Running Docker image 🐳")
 
-    if tag is None:
-        data = _build_data(ctx)
-        tag = data.tag
+    tag = tag or _build_data(ctx).tag
+    network = network or f"{PACKAGE}_default"
+    env_file = env_file or ".env"
+    database_url = database_url or "postgres://dev:dev_password@db:5432/dev"
 
-    if options is None:
-        options = "--env-file .env"
-
-    args = [f"docker run --rm -p 8000:8000 {options} {PACKAGE}:{tag}"]
+    args = [
+        "docker run",
+        "--rm",
+        "-it",
+        "-p 8000:8000",
+        f"--network {network}",
+        f"-e DATABASE_URL={database_url}",
+        f"--env-file {env_file}",
+        f"{PACKAGE}:{tag}"
+    ]
 
     if command:
         args.append(command)
 
     ctx.run(" ".join(args), echo=True, pty=True)
-
-
-
 
 
 @invoke.task
