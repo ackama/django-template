@@ -10,20 +10,22 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Install management tools
+      run: pipx install poetry && pipx install invoke
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
+        cache: 'poetry'
 
     - name: Install dependencies
-      run: |
-        pip install invoke poetry
-        invoke install --skip-install-playwright
+      run: invoke install --skip-install-playwright
 
     - name: Run linting and formatting
       run: |
-        poetry run invoke lint
-        poetry run invoke format --check
+        invoke lint
+        invoke format --check
 
   type-checking:
     name: Type Checking
@@ -32,19 +34,22 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Install management tools
+      run: pipx install poetry && pipx install invoke
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
+        cache: 'poetry'
 
     - name: Install dependencies
       run: |
-        pip install invoke poetry
         invoke install --skip-install-playwright
         cp example.env .env
 
     - name: Run type-checking
-      run: poetry run invoke typing
+      run: invoke typing
 
   documentation-building:
     name: Documentation Building
@@ -53,14 +58,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Install management tools
+      run: pipx install poetry && pipx install invoke
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
+        cache: 'poetry'
 
     - name: Install dependencies
       run: |
-        pip install invoke poetry
         invoke install --skip-install-playwright
 
     - name: Build the documentation
@@ -71,7 +79,7 @@ jobs:
       # setting `TZ=UTC` is a work around here to bypass that error.
       # NOTE: it runs fine when pushing to Github, but unfortunately not in act.
       # link to issue on act repository: https://github.com/nektos/act/issues/1853
-      run: TZ=UTC poetry run invoke build-docs
+      run: TZ=UTC invoke build-docs
 
   run-system-tests:
     name: Run System Test Suite
@@ -97,10 +105,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Install management tools
+      run: pipx install poetry && pipx install invoke
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
+        cache: 'poetry'
 
     - name: Install dependencies
       run: |
@@ -112,12 +124,11 @@ jobs:
           libffi-dev \
           libpq-dev
 
-        pip install invoke poetry
         invoke install --skip-install-playwright
         cp example.env .env
 
     - name: Run the system test suite
-      run: poetry run invoke test --suite=system
+      run: invoke test --suite=system
 
   run-functional-tests:
     name: Run Functional Test Suite
@@ -143,10 +154,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Install management tools
+      run: pipx install poetry && pipx install invoke
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
+        cache: 'poetry'
 
     - name: Install dependencies
       run: |
@@ -158,7 +173,6 @@ jobs:
           libffi-dev \
           libpq-dev
 
-        pip install invoke poetry
         invoke install
         cp example.env .env
 
@@ -170,11 +184,15 @@ jobs:
       run: echo "DATABASE_URL=postgres://dev:dev_password@localhost:5433/dev" >> $GITHUB_ENV
 
     - name: Run the functional test suite
-      run: poetry run invoke test --suite=functional
+      run: invoke test --suite=functional
 
   build-docker-image:
     name: Build Docker Image
-    needs: [static-analysis-checks, type-checking, run-system-tests, run-functional-tests]
+    needs:
+      - static-analysis-checks
+      - type-checking
+      - run-system-tests
+      - run-functional-tests
     runs-on: ubuntu-latest
 
     services:
@@ -197,13 +215,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Install management tools
+      run: pipx install invoke
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-
-    - name: Install dependencies
-      run: pip install invoke
 
     - name: Setup environment variables
       run: |
