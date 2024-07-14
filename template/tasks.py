@@ -9,6 +9,9 @@ import invoke
 
 PACKAGE = "{{ project_name }}"
 
+###################
+# GETTING STARTED #
+###################
 
 @invoke.task
 def help(ctx):
@@ -16,6 +19,23 @@ def help(ctx):
     Displays help text
     """
     ctx.run("inv -l", pty=True)
+
+@invoke.task()
+def install(ctx, skip_install_playwright: bool = False):
+    """
+    Install system dependencies necessary for the {{ project_name }} project.
+
+    This task optionally skips the installation of Playwright dependencies,
+    which is useful for CI pipelines where Playwright is not needed,
+    thereby improving the build performance.
+    """
+    _title("Installing Dependencies")
+    ctx.run("poetry install")
+
+    if not skip_install_playwright:
+        _title("Installing Playwright Dependencies")
+        ctx.run("poetry run playwright install --with-deps")
+
 
 
 #####################
@@ -81,10 +101,9 @@ def lint(ctx):
     stdout_captured = []
 
     # Need to collect the `stdout` during the command run in order to check
-    #  for specific error messages in the output
-    # UnexpectedExit doesn't hold the stdout, and could capture stdout to a
-    #  stream, but then if stdout and stderr both output they will not interpolate
-    #  correctly
+    # for specific error messages in the output UnexpectedExit doesn't hold the stdout,
+    # and could capture stdout to a stream, but then if stdout and stderr both output
+    # they will not interpolate correctly
     class StreamInterceptor(invoke.watchers.StreamWatcher):
         def submit(self, stream):
             stdout_captured.append(stream)
@@ -101,8 +120,8 @@ def lint(ctx):
                     " `inv format` to autoformat the code"
                 )
                 break
-        # By catching and raising the UnexpectedExit exception, the 'terminate on
-        #  error' behaviour of invoke is preserved
+        # By catching and raising the UnexpectedExit exception, the 'terminate on error'
+        # behaviour of invoke is preserved
         raise
 
 
@@ -206,33 +225,6 @@ def build_image(ctx, tag=None, pty=True):
         echo=True,
     )
 
-
-@invoke.task
-def run_image(
-    ctx, tag: str | None = None, options: str | None = None, command: str | None = None
-):
-    """
-    Run the service Docker image
-
-    Alternatively execute input commands in the container.
-    """
-    _title("Running Docker image 🐳")
-
-    if tag is None:
-        data = _build_data(ctx)
-        tag = data.tag
-
-    if options is None:
-        options = "--env-file .env"
-
-    args = [f"docker run --rm {options} {PACKAGE}:{tag}"]
-
-    if command:
-        args.append(command)
-
-    ctx.run(" ".join(args), echo=True)
-
-
 @invoke.task
 def build_docs(ctx):
     """
@@ -242,30 +234,55 @@ def build_docs(ctx):
     ctx.run("poetry run mkdocs build --strict")
 
 
+###########
+# RUNNING #
+###########
+
+
+@invoke.task
+def run_image(
+    ctx,
+    tag: str | None = None,
+    network: str | None = None,
+    env_file: str | None = None,
+    database_url: str | None = None,
+    command: str | None = None,
+):
+    """
+    Run the service Docker image
+
+    Alternatively execute input commands in the container.
+    """
+    _title("Running Docker image 🐳")
+
+    tag = tag or _build_data(ctx).tag
+    network = network or f"{PACKAGE}_default"
+    env_file = env_file or ".env"
+    database_url = database_url or "postgres://dev:dev_password@db:5432/dev"
+
+    args = [
+        "docker run",
+        "--rm",
+        "-it",
+        "-p 8000:8000",
+        f"--network {network}",
+        f"-e DATABASE_URL={database_url}",
+        f"--env-file {env_file}",
+        f"{PACKAGE}:{tag}"
+    ]
+
+    if command:
+        args.append(command)
+
+    ctx.run(" ".join(args), echo=True, pty=True)
+
+
 @invoke.task
 def run_docs(ctx):
     """
     Run the {{ project_name }} documentation locally
     """
     ctx.run("poetry run mkdocs serve")
-
-
-@invoke.task
-def install(ctx, skip_install_playwright: bool = False):
-    """
-    Install system dependencies necessary for the {{ project_name }} project.
-
-    This task optionally skips the installation of Playwright dependencies,
-    which is useful for CI pipelines where Playwright is not needed,
-    thereby improving the build performance.
-    """
-    _title("Installing Dependencies")
-    ctx.run("poetry install")
-
-    if not skip_install_playwright:
-        _title("Installing Playwright Dependencies")
-        ctx.run("poetry run playwright install --with-deps")
-
 
 ###########
 # HELPERS #
@@ -308,7 +325,7 @@ def _build_data(ctx) -> BuildData:
 
     commit_hash = ctx.run("git rev-parse --short=12 HEAD", hide="stdout").stdout.strip()
     commit_time = ctx.run("git show -s --format=%ct", hide="stdout").stdout.strip()
-    commit_count = ctx.run("git rev-list --count HEAD").stdout.strip()
+    commit_count = ctx.run("git rev-list --count HEAD", hide="stdout").stdout.strip()
     return BuildData(
         branch=branch,
         commit_hash=commit_hash,
