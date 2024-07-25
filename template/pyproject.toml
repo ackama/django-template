@@ -52,18 +52,6 @@ requires = ["poetry-core"]
 strict = true
 plugins = ["mypy_django_plugin.main"]
 
-# disallow_any_unimported = true
-check_untyped_defs = true
-disallow_untyped_defs = true
-no_implicit_optional = true
-
-warn_redundant_casts = true
-warn_return_any = true
-warn_unused_ignores = true
-
-show_error_codes = true
-show_traceback = true
-
 [[tool.mypy.overrides]]
 ignore_missing_imports = true
 module = "environ"
