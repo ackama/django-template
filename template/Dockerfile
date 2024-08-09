@@ -60,6 +60,9 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=builder /venv /venv
 
+# Copy Gunicorn configs
+COPY --chown=runtime:runtime src/gunicorn.conf.py /gunicorn.conf.py
+
 # _activate_ the virtual environment
 ENV VIRTUAL_ENV=/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
