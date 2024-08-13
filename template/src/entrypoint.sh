@@ -4,10 +4,10 @@ set -e
 if [ -z "$1" ] # nothing specified so we bootstrap the service itself
 then
     manage migrate --noinput
-    exec gunicorn -b 0.0.0.0:8000 -w 4 -k uvicorn.workers.UvicornWorker {{ project_name }}.main.asgi:application
+    exec gunicorn -c gunicorn.conf.py {{ project_name }}.main.asgi:application
 elif [ "$1" = "run" ]  # run the service only
 then
-    exec gunicorn -b 0.0.0.0:8000 -w 4 -k uvicorn.workers.UvicornWorker {{ project_name }}.main.asgi:application
+    exec gunicorn -c gunicorn.conf.py {{ project_name }}.main.asgi:application
 elif [ "$1" = "migrate" ]  # run database migrations
 then
     exec manage migrate --noinput "${@:2}"
