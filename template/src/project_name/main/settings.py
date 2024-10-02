@@ -1,6 +1,8 @@
 from pathlib import Path
 
 import environ
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -144,3 +146,18 @@ LOGGING = {
         },
     },
 }
+
+# Sentry
+sentry_sdk.init(
+    dsn=env("SENTRY_DSN", default=None),
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for tracing.
+    traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=1.0),
+    # Set profiles_sample_rate to 1.0 to profile 100%
+    # of sampled transactions.
+    # We recommend adjusting this value in production.
+    profiles_sample_rate=env.float("SENTRY_PROFILES_SAMPLE_RATE", default=1.0),
+    integrations=[
+        DjangoIntegration(),
+    ],
+)
