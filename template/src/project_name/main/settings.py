@@ -163,3 +163,5 @@ sentry_sdk.init(
         DjangoIntegration(),
     ],
 )
+# Ignore unwanted errors (Optional)
+# sentry_sdk.integrations.logging.ignore_logger("django.security.DisallowedHost")
