@@ -150,13 +150,14 @@ LOGGING = {
 # Sentry
 sentry_sdk.init(
     dsn=env("SENTRY_DSN", default=None),
+    environment=env("SENTRY_ENV", default="production"),
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for tracing.
-    traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=1.0),
+    traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=0.0),
     # Set profiles_sample_rate to 1.0 to profile 100%
     # of sampled transactions.
-    # We recommend adjusting this value in production.
-    profiles_sample_rate=env.float("SENTRY_PROFILES_SAMPLE_RATE", default=1.0),
+    # It's recommended to adjust this value in production.
+    profiles_sample_rate=env.float("SENTRY_PROFILES_SAMPLE_RATE", default=0.0),
     integrations=[
         DjangoIntegration(),
     ],
