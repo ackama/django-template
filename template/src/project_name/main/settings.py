@@ -151,7 +151,7 @@ LOGGING = {
 sentry_sdk.init(
     dsn=env("SENTRY_DSN", default=None),
     environment=env("SENTRY_ENV", default="production"),
-    release=f"{{ project_name }}@{GIT_COMMIT_HASH}",
+    release=GIT_COMMIT_HASH,
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for tracing.
     traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=0.0),
