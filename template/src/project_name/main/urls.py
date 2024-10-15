@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path
 
@@ -8,3 +9,8 @@ urlpatterns = [
     path("release.json", views.Release.as_view()),
     path("admin/", admin.site.urls),
 ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        path("sentry-debug/", views.SentryDebug.as_view()),
+    ]
