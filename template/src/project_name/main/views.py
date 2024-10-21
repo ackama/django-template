@@ -31,3 +31,14 @@ class Release(generic.View):
                 "revision": settings.GIT_COMMIT_COUNT,
             }
         )
+
+
+class SentryDebug(generic.View):
+    """
+    Raise an error to test Sentry error reporting
+    """
+
+    def get(
+        self, request: http.HttpRequest, *args: Any, **kwargs: Any
+    ) -> http.HttpResponse:
+        raise ValueError("This is a test error for Sentry")
