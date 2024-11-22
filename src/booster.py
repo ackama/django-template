@@ -7,8 +7,9 @@ import yaml
 
 app = typer.Typer()
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = BASE_DIR / "output"
+DEFAULT_CONFIG = BASE_DIR / "sample_config.yml"
 
 
 def load_config(config_path: Path):
@@ -66,7 +67,7 @@ def django_start_project(config):
 @app.command()
 def fire(
     config_path: Path = typer.Option(
-        "./sample_config.yml",
+        DEFAULT_CONFIG,
         "--config",
         help="Path to the project configuration YAML file",
     )
