@@ -1,1 +1,3 @@
 project_name: project_name
+template_path: template/
+output_dir: ./output/
