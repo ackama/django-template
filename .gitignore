@@ -11,5 +11,6 @@ coverage.xml
 data/
 dist/
 htmlcov/
+output/
 site/
 .DS_Store

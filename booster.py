@@ -8,6 +8,7 @@ import yaml
 app = typer.Typer()
 
 BASE_DIR = Path(__file__).resolve().parent
+OUTPUT_DIR = BASE_DIR / "output"
 
 
 def load_config(config_path: Path):
@@ -21,7 +22,7 @@ def django_start_project(config):
     """Create a Django project using the specified configuration."""
     project_name = config["project_name"]
     template_path = config.get("template_path", "template/")
-    output_dir = Path(config.get("output_dir")) or BASE_DIR / "output"
+    output_dir = Path(config.get("output_dir")) or OUTPUT_DIR
     output_dir.mkdir(parents=True, exist_ok=True)
     project_path = output_dir / project_name
     if project_path.exists():
@@ -38,7 +39,6 @@ def django_start_project(config):
     project_path.mkdir(parents=True, exist_ok=True)
 
     # Call django-admin startproject
-    typer.echo(BASE_DIR)
     typer.echo(f"Starting Django project '{project_name}' in {project_path}...")
 
     try:
