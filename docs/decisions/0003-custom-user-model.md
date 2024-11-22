@@ -1,4 +1,4 @@
-# 0002 Use Custom User Model
+# 0003 Use Custom User Model
 
 - Date: 2024-04-10
 - Author(s): [Chen Zhang][chen]
