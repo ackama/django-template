@@ -41,22 +41,26 @@ def django_start_project(config):
     typer.echo(BASE_DIR)
     typer.echo(f"Starting Django project '{project_name}' in {project_path}...")
 
-    subprocess.run(
-        [
-            "django-admin",
-            "startproject",
-            project_name,
-            str(project_path),
-            "--template",
-            template_path,
-            "--extension",
-            "py,env,sh,toml,yml",
-            "--exclude",
-            "nothing",
-        ]
-    )
-
-    typer.echo(f"Django project '{project_name}' created successfully!")
+    try:
+        subprocess.run(
+            [
+                "django-admin",
+                "startproject",
+                project_name,
+                str(project_path),
+                "--template",
+                template_path,
+                "--extension",
+                "py,env,sh,toml,yml",
+                "--exclude",
+                "nothing",
+            ],
+            check=True,
+        )
+        typer.echo(f"Django project '{project_name}' created successfully!")
+    except subprocess.CalledProcessError:
+        typer.echo(f"Failed to create the project '{project_name}'.", err=True)
+        raise SystemExit(1)
 
 
 @app.command()
