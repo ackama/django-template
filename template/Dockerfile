@@ -1,7 +1,7 @@
 # Packaging Stage
 # ===============
 
-FROM python:3.12.2-slim-bookworm as packager
+FROM python:3.12.8-slim-bookworm as packager
 ENV PYTHONUNBUFFERED=1
 RUN pip install -U pip && pip install poetry poetry-plugin-export
 COPY README.md pyproject.toml poetry.lock /source/
@@ -15,7 +15,7 @@ RUN rm -rf dist && poetry export -o requirements.txt && poetry build
 # Building Stage
 # ==============
 
-FROM python:3.12.0-bullseye as builder
+FROM python:3.12.8-slim-bookworm as builder
 ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && apt-get install -y \
@@ -43,7 +43,7 @@ RUN pip install --no-deps *.whl
 # Final Runtime
 # =============
 
-FROM python:3.12.2-slim-bookworm as runtime
+FROM python:3.12.8-slim-bookworm as runtime
 ENV PYTHONUNBUFFERED=1
 
 ARG GIT_COMMIT_HASH
