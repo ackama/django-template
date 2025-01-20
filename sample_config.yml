@@ -1,0 +1,3 @@
+project_name: test_project
+template_path: template/
+output_dir: ./output/
