@@ -132,17 +132,23 @@ LOG_LEVEL = env("APP_LOG_LEVEL", default="INFO")
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": "{levelname:<9s} {name} {asctime} {message}",
+            "style": "{",
+        },
+    },
     "handlers": {
         "console": {
-            "level": LOG_LEVEL,
             "class": "logging.StreamHandler",
+            "formatter": "standard",
         },
     },
     "loggers": {
-        "django": {
+        "{{ project_name }}": {
             "handlers": ["console"],
             "level": LOG_LEVEL,
-            "propagate": True,
+            "propagate": False,
         },
     },
 }

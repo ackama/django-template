@@ -2,7 +2,7 @@
 
 - Date: 2024-02-09
 - Author(s): [Jonathan Moss][jmoss]
-- Status: `Active`
+- Status: `Obsolete`
 
 ## Decision
 
