@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "booster"
+version = "0.1.0"
+description = "A CLI tool for generating Django projects for Ackama."
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "BSD-3-Clause"}
+dependencies = [
+    "typer[all]>=0.9.0",
+    "jinja2>=3.1.0",
+    "pyyaml>=6.0"
+]
+
+[project.scripts]
+booster = "src.booster:app"
