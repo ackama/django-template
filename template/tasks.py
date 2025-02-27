@@ -15,7 +15,7 @@ PACKAGE = "{{ project_name }}"
 
 
 @invoke.task
-def help(ctx):
+def help(ctx):  # noqa: A001
     """
     Displays help text
     """
@@ -45,7 +45,7 @@ def install(ctx, skip_install_playwright: bool = False):
 
 
 @invoke.task
-def format(ctx, check: bool = False) -> None:
+def format(ctx, check: bool = False) -> None:  # noqa: A001
     """
     Apply automatic code formatting tools
 
@@ -53,9 +53,10 @@ def format(ctx, check: bool = False) -> None:
     When `check` is True, it performs a dry-run to identify non-compliant
     files without applying changes.
     """
-    _title("Applying code formatters ")
-    ctx.run(f"poetry run black src{' --check' if check else ''}")
-    ctx.run(f"poetry run isort src{' --check' if check else ''}")
+    suffix = " (check only)" if check else ""
+    _title(f"Applying code formatters{suffix}")
+    ctx.run(f"poetry run ruff format src{' --check' if check else ''}")
+    ctx.run(f"poetry run ruff check --select I{' --fix' if not check else ''} src")
 
 
 @invoke.task
@@ -313,9 +314,10 @@ class BuildData:
 
 def _build_data(ctx) -> BuildData:
     """
-    Retrieves the current git branch, commit hash and commit time for using during builds
+    Retrieves the current git branch, commit hash and time for using during builds
 
-    Also provides a `tag` which is suitable for use as a Docker image tag based on these values
+    Also provides a `tag` which is suitable for use as a Docker image tag based on these
+    values
     """
     max_tag_length = 128
     branch = ctx.run("git rev-parse --abbrev-ref HEAD", hide="stdout").stdout.strip()
