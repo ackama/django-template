@@ -13,12 +13,14 @@ PACKAGE = "{{ project_name }}"
 # GETTING STARTED #
 ###################
 
+
 @invoke.task
 def help(ctx):
     """
     Displays help text
     """
     ctx.run("inv -l", pty=True)
+
 
 @invoke.task()
 def install(ctx, skip_install_playwright: bool = False):
@@ -35,7 +37,6 @@ def install(ctx, skip_install_playwright: bool = False):
     if not skip_install_playwright:
         _title("Installing Playwright Dependencies")
         ctx.run("poetry run playwright install --with-deps")
-
 
 
 #####################
@@ -225,6 +226,7 @@ def build_image(ctx, tag=None, pty=True):
         echo=True,
     )
 
+
 @invoke.task
 def build_docs(ctx):
     """
@@ -268,7 +270,7 @@ def run_image(
         f"--network {network}",
         f"-e DATABASE_URL={database_url}",
         f"--env-file {env_file}",
-        f"{PACKAGE}:{tag}"
+        f"{PACKAGE}:{tag}",
     ]
 
     if command:
@@ -283,6 +285,7 @@ def run_docs(ctx):
     Run the {{ project_name }} documentation locally
     """
     ctx.run("poetry run mkdocs serve")
+
 
 ###########
 # HELPERS #
