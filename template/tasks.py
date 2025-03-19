@@ -13,12 +13,14 @@ PACKAGE = "{{ project_name }}"
 # GETTING STARTED #
 ###################
 
+
 @invoke.task
-def help(ctx):
+def help(ctx):  # noqa: A001
     """
     Displays help text
     """
     ctx.run("inv -l", pty=True)
+
 
 @invoke.task()
 def install(ctx, skip_install_playwright: bool = False):
@@ -37,14 +39,13 @@ def install(ctx, skip_install_playwright: bool = False):
         ctx.run("poetry run playwright install --with-deps")
 
 
-
 #####################
 # QUALITY ASSURANCE #
 #####################
 
 
 @invoke.task
-def format(ctx, check: bool = False) -> None:
+def format(ctx, check: bool = False) -> None:  # noqa: A001
     """
     Apply automatic code formatting tools
 
@@ -52,9 +53,10 @@ def format(ctx, check: bool = False) -> None:
     When `check` is True, it performs a dry-run to identify non-compliant
     files without applying changes.
     """
-    _title("Applying code formatters ")
-    ctx.run(f"poetry run black src{' --check' if check else ''}")
-    ctx.run(f"poetry run isort src{' --check' if check else ''}")
+    suffix = " (check only)" if check else ""
+    _title(f"Applying code formatters{suffix}")
+    ctx.run(f"poetry run ruff format src{' --check' if check else ''}")
+    ctx.run(f"poetry run ruff check --select I{' --fix' if not check else ''} src")
 
 
 @invoke.task
@@ -225,6 +227,7 @@ def build_image(ctx, tag=None, pty=True):
         echo=True,
     )
 
+
 @invoke.task
 def build_docs(ctx):
     """
@@ -268,7 +271,7 @@ def run_image(
         f"--network {network}",
         f"-e DATABASE_URL={database_url}",
         f"--env-file {env_file}",
-        f"{PACKAGE}:{tag}"
+        f"{PACKAGE}:{tag}",
     ]
 
     if command:
@@ -283,6 +286,7 @@ def run_docs(ctx):
     Run the {{ project_name }} documentation locally
     """
     ctx.run("poetry run mkdocs serve")
+
 
 ###########
 # HELPERS #
@@ -310,9 +314,10 @@ class BuildData:
 
 def _build_data(ctx) -> BuildData:
     """
-    Retrieves the current git branch, commit hash and commit time for using during builds
+    Retrieves the current git branch, commit hash and time for using during builds
 
-    Also provides a `tag` which is suitable for use as a Docker image tag based on these values
+    Also provides a `tag` which is suitable for use as a Docker image tag based on these
+    values
     """
     max_tag_length = 128
     branch = ctx.run("git rev-parse --abbrev-ref HEAD", hide="stdout").stdout.strip()
