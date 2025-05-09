@@ -10,7 +10,7 @@ version = "0.1.0"
 manage = "{{ project_name }}.manage:main"
 
 [tool.poetry.dependencies]
-django = "^5.1.8"
+django = "^5.1.9"
 django-environ = "^0.12.0"
 psycopg = {extras = ["binary", "pool"], version = "^3.2.0"}
 python = "^3.12"
