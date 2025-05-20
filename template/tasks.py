@@ -95,36 +95,12 @@ def typing_daemon_stop(ctx):
 
 
 @invoke.task
-def lint(ctx):
+def lint(ctx, fix=False):
     """
     Check linting in the src folder
     """
     _title("Linting code")
-    stdout_captured = []
-
-    # Need to collect the `stdout` during the command run in order to check
-    # for specific error messages in the output UnexpectedExit doesn't hold the stdout,
-    # and could capture stdout to a stream, but then if stdout and stderr both output
-    # they will not interpolate correctly
-    class StreamInterceptor(invoke.watchers.StreamWatcher):
-        def submit(self, stream):
-            stdout_captured.append(stream)
-            return (stream,)
-
-    try:
-        ctx.run("poetry run flake8 src", watchers=(StreamInterceptor(),))
-    except invoke.exceptions.UnexpectedExit:
-        stdout_text = "".join(stdout_captured)
-        for error_code in ("BLK100", "I001", "I003", "I004", "I004"):
-            if error_code in stdout_text:
-                print(
-                    "One or more formatting errors occurred. Please ensure you have run"
-                    " `inv format` to autoformat the code"
-                )
-                break
-        # By catching and raising the UnexpectedExit exception, the 'terminate on error'
-        # behaviour of invoke is preserved
-        raise
+    ctx.run(f"poetry run ruff check{' --fix ' if fix else ''} src")
 
 
 @invoke.task
