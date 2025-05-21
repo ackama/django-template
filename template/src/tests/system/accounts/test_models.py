@@ -20,8 +20,8 @@ def test_create_user() -> None:
 @pytest.mark.django_db
 def test_create_superuser() -> None:
     User = get_user_model()
-    admin_user = User.objects.create_superuser(  # noqa: S106
-        username="superuser", password="123"
+    admin_user = User.objects.create_superuser(
+        username="superuser", password="123"  # noqa: S106
     )
 
     assert User is models.User

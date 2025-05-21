@@ -24,8 +24,9 @@ jobs:
 
     - name: Run linting and formatting
       run: |
-        invoke lint
         invoke format --check
+        invoke lint
+        
 
   type-checking:
     name: Type Checking
