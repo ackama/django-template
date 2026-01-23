@@ -14,7 +14,7 @@ serve () {
         --no-use-colors \
         --access-log \
         --log-level="$UVICORN_LOG_LEVEL" \
-        {{ project_name }}.main.asgi:application
+        {{ project_module }}.main.asgi:application
 }
 
 if [ -z "$1" ] # nothing specified so we bootstrap the service itself

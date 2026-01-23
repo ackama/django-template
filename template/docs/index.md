@@ -1,1 +1,1 @@
-# SITE NAME
+# {{ project_name }}

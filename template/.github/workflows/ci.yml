@@ -26,7 +26,7 @@ jobs:
       run: |
         invoke format --check
         invoke lint
-        
+
 
   type-checking:
     name: Type Checking
@@ -239,4 +239,4 @@ jobs:
       # Since we are running the app in docker we need to ensure it attaches to the same
       # virtual network.
       run: |
-        invoke run-image --network {% verbatim %}${{ job.container.network }}{% endverbatim %} --command check
+        invoke run-image --network ${{ job.container.network }}--command check
