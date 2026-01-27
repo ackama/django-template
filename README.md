@@ -13,35 +13,45 @@ This project is intended as:
 
 ## Usage
 
-To create a new project from this template, you must have the most recent stable version
-of Django installed in order to run the `startproject` command. The simplest way to do
-this is with [pipx][pipx]:
+To create a new Django project using this template, you have two options:
 
-```shell
-pipx install django
+### Option 1: Build the Package and Run the Installed booster Command (WIP)
+
+1. Build the package:
+
+```bash
+python -m build
 ```
 
-This will ensure that the `django-admin` command is available in your shell. From there
-you can create a new project with the following command:
+2. Install it with `pipx`:
 
-```shell
-django-admin startproject --template path/to/django-template/template/ --extension py,env,sh,toml,yml --exclude nothing <project_name>
+```bash
+pipx install dist/booster-<version>.whl
 ```
+
+1. Run the booster command:
+
+```bash 
+booster --config path_to_config.yml
+```
+
+### Option 2: Run Directly Without Building
+
+If you don't want to build the package, you can run the script directly from the source:
+
+```bash
+python src/booster.py fire --config sample_config.yml
+```
+
+Both options allow you to generate a new project dynamically based on your configuration file.
 
 > [!NOTE]
-> When initiating a Django project with a custom template, be aware that directories starting with
-> a dot (e.g., `.github` for GitHub Actions workflows) are not included by default. A workaround
-> from Django 4.0 onwards involves using the `--exclude` option with the `startproject` command.
-> Oddly, specifying `--exclude` with a non-existent directory can allow these dot-prefixed
-> directories to be copied. This trick can ensure that essential configurations like `.github` are
-> included in your project setup.
+> The config file should specify details such as the project name. Refer to `sample_config.yml` for an example. If no configuration file is provided, the CLI will default to using `sample_config.yml`.
 
 > [!WARNING]
 > The name of your project _must_ be a valid Python package name - that means
 > underscores (`_`) not hyphens (`-`) for name separators please.
 
-Running the Django admin command will create a new project in the folder specified in
-with `<project_name>`.
 
 ## Contributing
 

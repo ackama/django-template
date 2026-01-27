@@ -11,5 +11,7 @@ coverage.xml
 data/
 dist/
 htmlcov/
+output/
 site/
+src/booster.egg-info/
 .DS_Store

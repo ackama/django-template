@@ -51,22 +51,19 @@ jobs:
             libpq-dev
 
           # Base Python tooling
-          pip install invoke poetry django
+          pip install invoke poetry django typer pyyaml
 
       - name: Create test project
         run: |
-          django-admin startproject \
-            --template template/ \
-            --extension py,Dockerfile,env,toml,yml \
-            test_project
+          python src/booster.py --config sample_config.yml
 
       - name: Install test project
         run: |
-          cd test_project
+          cd output/test_project
           poetry run invoke install
 
       - name: Check test project is valid
         run: |
-          cd test_project
+          cd output/test_project
           cp example.env .env
           poetry run invoke check
