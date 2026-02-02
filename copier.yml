@@ -1,0 +1,16 @@
+_subdirectory: template
+
+project_name:
+    type: str
+    help: What is your project name?
+
+project_module:
+    type: str
+    help: What is your Python module name?
+    default: "{{project_name | lower | replace(' ','_')}}"
+    validator: "{% if not project_module.isidentifier() %}Must be valid Python identifier{% endif %}"
+
+use_feature_toggles:
+    type: bool
+    help: Do you want support for feature toggles?
+    default: true

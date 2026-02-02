@@ -51,14 +51,16 @@ jobs:
             libpq-dev
 
           # Base Python tooling
-          pip install invoke poetry django
+          pip install invoke poetry copier
 
       - name: Create test project
         run: |
-          django-admin startproject \
-            --template template/ \
-            --extension py,Dockerfile,env,toml,yml \
-            test_project
+          cat <<EOF > answers.yml
+          project_name: Test Project
+          project_module: test_project
+          use_feature_toggles: true
+          EOF
+          copier copy . --data-file answers.yml -f test_project
 
       - name: Install test project
         run: |

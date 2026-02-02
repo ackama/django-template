@@ -34,8 +34,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Third party
+    {% if use_feature_toggles %}"waffle",{% endif %}
     # Local
-    "{{ project_name }}.accounts",
+    "{{ project_module }}.accounts",
 ]
 
 MIDDLEWARE = [
@@ -46,9 +47,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    {% if use_feature_toggles %}"waffle.middleware.WaffleMiddleware",{% endif %}
 ]
 
-ROOT_URLCONF = "{{ project_name }}.main.urls"
+ROOT_URLCONF = "{{ project_module }}.main.urls"
 
 TEMPLATES = [
     {
@@ -66,7 +68,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "{{ project_name }}.main.wsgi.application"
+WSGI_APPLICATION = "{{ project_module }}.main.wsgi.application"
 
 
 # Database
@@ -158,14 +160,22 @@ LOGGING = {
         },
     },
     "loggers": {
-        "{{ project_name }}": {
+        "{{ project_module }}": {
             "handlers": ["console"],
             "level": LOG_LEVEL,
             "propagate": False,
         },
     },
 }
-
+{% if use_feature_toggles %}
+# Waffle settings
+WAFFLE_FLAG_DEFAULT = False
+WAFFLE_SWITCH_DEFAULT = False
+WAFFLE_SAMPLE_DEFAULT = 0.0
+WAFFLE_CREATE_MISSING_SWITCHES = True
+WAFFLE_CREATE_MISSING_FLAGS = True
+WAFFLE_CREATE_MISSING_SAMPLES = True
+{% endif %}
 # Sentry
 sentry_sdk.init(
     dsn=env("SENTRY_DSN", default=None),
