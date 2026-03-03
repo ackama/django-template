@@ -14,13 +14,8 @@ This project is intended as:
 ## Usage
 
 To create a new project from this template, you can use [Copier][copier]. The simplest
-way to run copier is with [pipx][pipx] or [uvx][uvx]:
+way to run copier is with [uvx][uvx]:
 
-```shell
-pipx run copier copy path/to/django-template <project_folder>
-```
-
-or
 
 ```shell
 uvx copier copy path/to/django-template <project_folder>
@@ -34,7 +29,7 @@ uvx copier copy gh:ackama/django-template <project_folder>
 
 This will ask you a series of questions to help you configure your project. The answer
 you provide to these questions will also be recorded in your new project in a file
-called `.copier-answers.yml`.y
+called `.copier-answers.yml`.
 
 Running the copier command will create a new project in the folder specified in
 with `<project_folder>`.
@@ -54,5 +49,4 @@ Feature branches are encouraged, and merging should on consensus from guild
 
 <!-- Links -->
 [copier]: https://copier.readthedocs.io/en/stable/
-[pipx]: https://pypa.github.io/pipx/
 [uvx]: https://docs.astral.sh/uv/guides/tools/

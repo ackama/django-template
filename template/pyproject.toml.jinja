@@ -1,46 +1,62 @@
-[tool.poetry]
-authors = ["{{author_name}} {{author_email}}"]
-description = ""
+[project]
 name = "{{ project_module }}"
-packages = [{include = "{{ project_module }}", from = "src"}]
-readme = "README.md"
 version = "0.1.0"
+description = ""
+authors = [{ name = "{{ user_name }}", email = "{{ user_email }}" }]
+requires-python = ">=3.12,<3.13"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "django>=5.1.9,<6",
+    "django-environ>=0.12.0,<0.13",
+    "psycopg[binary, pool]>=3.2.0,<4",
+    "uvicorn>=0.34.0,<0.35",
+    "uvloop>=0.21.0,<0.22 ; sys_platform != 'win32'",
+    "sentry-sdk>=2.20.0,<3",
+    "httptools>=0.6.4,<0.7",
+    {% if use_feature_toggles %}"django-waffle>=5.0.0,<6",{% endif %}
+]
 
-[tool.poetry.scripts]
+[project.scripts]
 manage = "{{ project_module }}.manage:main"
 
-[tool.poetry.dependencies]
-django = "^5.1.9"
-django-environ = "^0.12.0"
-psycopg = {extras = ["binary", "pool"], version = "^3.2.0"}
-python = "^3.12"
-uvicorn = "^0.34.0"
-uvloop = { version = "^0.21.0", markers = "sys_platform != 'win32'" }
-sentry-sdk = "^2.20.0"
-httptools = "^0.6.4"
-{% if use_feature_toggles %}django-waffle = "^5.0.0"{% endif %}
+[dependency-groups]
+dev = [
+    "django-stubs>=5.1.0,<6",
+    "factory-boy>=3.3.0,<4",
+    "invoke>=2.2.0,<3",
+    "ipython>=8.31.0,<9",
+    "mkdocs>=1.6.0,<2",
+    "mkdocs-material>=9.5.0,<10",
+    "mkdocstrings>=0.27.0,<0.28",
+    "mypy[mypyc]>=1.14.0,<2",
+    "pudb>=2024.1.0,<2025",
+    "pytest>=8.3.0,<9",
+    "pytest-cov>=6.0.0,<7",
+    "pytest-django>=4.9.0,<5",
+    "pytest-playwright>=0.6.0,<0.7",
+    "pytest-spec>=4.0.0,<5",
+    "ruff>=0.11,<0.12",
+]
 
-[tool.poetry.group.dev.dependencies]
-django-stubs = "^5.1.0"
-factory-boy = "^3.3.0"
-invoke = "^2.2.0"
-ipython = "^8.31.0"
-mkdocs = "^1.6.0"
-mkdocs-material = "^9.5.0"
-mkdocstrings = "^0.27.0"
-mypy = { extras = ["mypyc"], version = "^1.14.0" }
-poetry = "^1.8.0"
-pudb = "^2024.1.0"
-pytest = "^8.3.0"
-pytest-cov = "^6.0.0"
-pytest-django = "^4.9.0"
-pytest-playwright = "^0.6.0"
-pytest-spec = "^4.0.0"
-ruff = "^0.11"
+[tool.uv]
+default-groups = "all"
+
+[tool.hatch.build.targets.sdist]
+include = ["src/{{ project_module }}"]
+
+[tool.hatch.build.targets.wheel]
+include = ["src/{{ project_module }}"]
+
+[tool.hatch.build.targets.wheel.sources]
+"src/{{ project_module }}" = "{{ project_module }}"
 
 [build-system]
-build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core"]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.mypy]
 strict = true

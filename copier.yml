@@ -1,5 +1,11 @@
 _subdirectory: template
 
+user_name:
+    type: str
+
+user_email:
+    type: str
+
 project_name:
     type: str
     help: What is your project name?
