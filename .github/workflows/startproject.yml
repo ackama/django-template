@@ -36,9 +36,8 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
 
       - name: Install Dependencies
         run: |
@@ -50,25 +49,27 @@ jobs:
             libffi-dev \
             libpq-dev
 
-          # Base Python tooling
-          pip install invoke poetry copier
+      - name: Set up Python
+        run: uv python install 3.12
 
       - name: Create test project
         run: |
           cat <<EOF > answers.yml
+          user_name: Ackama
+          user_email: ackama@example.com
           project_name: Test Project
           project_module: test_project
           use_feature_toggles: true
           EOF
-          copier copy . --data-file answers.yml -f test_project
+          uvx copier copy . --data-file answers.yml -f test_project
 
       - name: Install test project
         run: |
           cd test_project
-          poetry run invoke install
+          uvx invoke install
 
       - name: Check test project is valid
         run: |
           cd test_project
           cp example.env .env
-          poetry run invoke check
+          uvx invoke check
