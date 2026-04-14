@@ -1,6 +1,7 @@
 __pycache__
 .coverage
 .dmypy.json
+.DS_Store
 .env
 .mypy_cache
 .pytest_cache
@@ -11,5 +12,6 @@ coverage.xml
 data/
 dist/
 htmlcov/
+node_modules/
 site/
-.DS_Store
+{% if ts_integration %}src/{{ project_module }}/static/assets/*{% endif %}

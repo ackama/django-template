@@ -1,0 +1,38 @@
+'use strict';
+
+const configAckamaBase = require('eslint-config-ackama');
+const configAckamaJest = require('eslint-config-ackama/jest');
+const configAckamaReact = require('eslint-config-ackama/react');
+const configAckamaTypeScript = require('eslint-config-ackama/typescript');
+const globals = require('globals');
+
+/** @type {import('eslint').Linter.FlatConfig[]} */
+const config = [
+  { files: ['**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}'] },
+  { ignores: ['.venv/*', 'htmlcov/*', 'src/{{ project_module }}/static/assets/*'] },
+  ...configAckamaBase,
+  ...configAckamaTypeScript,
+  {
+    languageOptions: {
+      parserOptions: { projectService: true },
+      globals: globals.commonjs
+    }
+  },
+  ...configAckamaReact,
+  ...[
+    ...configAckamaJest,
+    /** @type {import('eslint').Linter.FlatConfig} */ ({
+      rules: { 'jest/prefer-expect-assertions': 'off' }
+    })
+  ].map(c => ({ ...c, files: ['test/**'] })),
+  {
+    files: ['**/*.js'],
+    languageOptions: { sourceType: 'script' },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-var-requires': 'off'
+    }
+  }
+];
+
+module.exports = config;

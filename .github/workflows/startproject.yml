@@ -53,23 +53,28 @@ jobs:
         run: uv python install 3.14
 
       - name: Create test project
+        # tp is used as prettier will reformat files if the name is too long, 
+        # causing the test to fail as the generated project won't match the expected 
+        # output.
         run: |
           cat <<EOF > answers.yml
           user_name: Ackama
           user_email: ackama@example.com
           project_name: Test Project
-          project_module: test_project
+          project_module: tp
           use_feature_toggles: true
+          ts_integration: true
+          use_htmx: true
           EOF
-          uvx copier copy . --data-file answers.yml -f test_project
+          uvx copier copy . --data-file answers.yml -f tp
 
       - name: Install test project
         run: |
-          cd test_project
+          cd tp
           uvx invoke install
 
       - name: Check test project is valid
         run: |
-          cd test_project
+          cd tp
           cp example.env .env
           uvx invoke check
