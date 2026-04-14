@@ -1,0 +1,34 @@
+'use strict';
+
+const configAckamaBase = require('eslint-config-ackama');
+const globals = require('globals');
+
+/** @type {import('eslint').Linter.FlatConfig[]} */
+const config = [
+  { files: ['**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}'] },
+  {
+    ignores: [
+      '.venv/*',
+      'htmlcov/*',
+      'node_modules/*',
+      'src/{{ project_module }}/static/assets/*'
+    ]
+  },
+
+  {
+    files: ['webpack.config.ts', 'eslint.config.js'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: { ...globals.node }
+    },
+    rules: {
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-var-requires': 'off',
+      'strict': 'error'
+    }
+  },
+  ...configAckamaBase
+];
+
+module.exports = config;
