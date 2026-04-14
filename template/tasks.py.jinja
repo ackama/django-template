@@ -202,8 +202,17 @@ def build_image(ctx, tag=None, pty=True):
         pty=pty,
         echo=True,
     )
-
-
+{% if ts_integration %}
+@invoke.task
+def build_assets(ctx, install_deps=True):
+    """
+    Build the {{ project_module }} static assets
+    """
+    _title("Building static assets")
+    if install_deps:
+        ctx.run("npm install")
+    ctx.run("npm run build")
+{% endif %}
 @invoke.task
 def build_docs(ctx):
     """

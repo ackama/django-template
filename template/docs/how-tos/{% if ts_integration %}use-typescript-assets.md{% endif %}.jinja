@@ -1,0 +1,63 @@
+---
+tags:
+  - Frontend
+  - Assets
+  - TypeScript
+  - How-To
+---
+# Build and Use TypeScript Assets in Templates
+
+This guide shows how to update frontend TypeScript assets and load them in
+Django templates.
+
+## 1. Update Asset Source
+
+Edit the TypeScript source in `src/assets/`, usually:
+
+- `src/assets/main.ts`
+
+## 2. Build Assets
+
+Run:
+
+```shell
+inv build-assets
+```
+
+If dependencies are already installed and unchanged, you can skip reinstalling
+npm packages:
+
+```shell
+inv build-assets --no-install-deps
+```
+
+After build, compiled files are written to:
+
+- `src/{{ project_module }}/static/assets/`
+
+## 3. Load the Built Asset in a Django Template
+
+Use Django's `static` template tag.
+{% raw %}
+```django
+{% load static %}
+<script src="{% static 'assets/main.js' %}"></script>
+```
+{% endraw %}
+Important:
+
+- Load the `static` tag before using it.
+- Reference the asset path as `assets/<filename>`.
+- Do not hardcode `/static/assets/...` URLs.
+
+## 4. Verify
+
+1. Confirm output exists in `src/{{ project_module }}/static/assets/`.
+2. Reload your page and check that the script request succeeds.
+3. If changes do not appear, perform a hard refresh to bypass browser cache.
+
+## Docker Note
+
+When you build the Docker image, frontend assets are rebuilt as part of the
+Dockerfile build process. You do not need a separate runtime step in the
+container to compile assets.

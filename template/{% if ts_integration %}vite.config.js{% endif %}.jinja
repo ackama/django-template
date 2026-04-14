@@ -1,0 +1,20 @@
+import { defineConfig } from 'vite';
+import { resolve } from 'path';
+
+export default defineConfig({
+    root: resolve('./src/'),
+    base: '/static/assets/',
+    build: {
+        outDir: resolve('./src/{{ project_module }}/static/assets/'),
+        rollupOptions: {
+            input: {
+                main: resolve('./src/assets/main.ts')
+            },
+            output: {
+                entryFileNames: `[name].js`,
+                chunkFileNames: `[name].js`,
+                assetFileNames: `[name][extname]`
+            }
+        },
+    },
+});

@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "format": "prettier src/assets --write",
+    "lint": "prettier src/assets --check"
+  },
+  "dependencies":{
+    {% if use_htmx %}"htmx.org": "^2.0.8"{% endif %}
+  },
+  "devDependencies": {
+    "prettier": "^3.7.3",
+    "vite": "^6.0.0"
+  }
+}

@@ -1,11 +1,25 @@
 # Packaging Stage
 # ===============
 
+{% if ts_integration %}
+FROM node:24.15 AS assets
+COPY vite.config.js /source/
+COPY tsconfig.json /source/
+COPY package.json /source/
+COPY package-lock.json /source
+WORKDIR /source
+RUN npm install
+
+COPY src/assets /source/src/assets/
+RUN npm run build 
+{% endif %}
+
 FROM python:3.12.8-slim-bookworm AS packager
 ENV PYTHONUNBUFFERED=1
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 COPY README.md pyproject.toml uv.lock /source/
 COPY src /source/src/
+{% if ts_integration %}COPY --from=assets /source/src/{{ project_module }}/static/assets/ /source/src/{{ project_module }}/static/assets/{% endif %}
 WORKDIR /source/
 
 # Uses export to get a pinned list of requirements
