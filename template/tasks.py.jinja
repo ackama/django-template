@@ -45,25 +45,11 @@ def install(ctx, skip_install_playwright: bool = False):
 
 
 @invoke.task
-def format(ctx, check: bool = False) -> None:  # noqa: A001
+def format(ctx) -> None:  # noqa: A001
     """
     Apply automatic code formatting tools
-
-    By default, this modifies files to match coding style guidelines.
-    When `check` is True, it performs a dry-run to identify non-compliant
-    files without applying changes.
     """
-    suffix = " (check only)" if check else ""
-    _title(f"Applying code formatters{suffix}")
-    ctx.run(f"uv run ruff format src{' --check' if check else ''}")
-    ctx.run(f"uv run ruff check --select I{' --fix' if not check else ''} src")
-    if check:
-        ctx.run(
-            'uv run djangofmt . && git diff --exit-code -- "*.html" || '
-            '(echo "HTML templates are not formatted. Run \'djangofmt\' to fix."    && exit 1)'
-        )
-    else:
-        ctx.run("uv run djangofmt .")
+    lint(ctx, fix=True)
 
 
 @invoke.task
@@ -106,8 +92,19 @@ def lint(ctx, fix=False):
     """
     Check linting in the src folder
     """
-    _title("Linting code")
-    ctx.run(f"uv run ruff check{' --fix ' if fix else ''} src")
+    if fix:
+        _title("Formatting and fixing linting errors")
+        ctx.run("uv run ruff format src")
+        ctx.run("uv run ruff check --fix src")
+        ctx.run("uv run djangofmt .")
+    else:
+        _title("Linting code")
+        ctx.run("uv run ruff format --check src")
+        ctx.run("uv run ruff check src")
+        ctx.run(
+            'uv run djangofmt . && git diff --exit-code -- "*.html" || '
+            '(echo "HTML templates are not formatted. Run \'djangofmt\' to fix." && exit 1)'
+        )
 
 
 @invoke.task
