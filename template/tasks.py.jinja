@@ -57,6 +57,13 @@ def format(ctx, check: bool = False) -> None:  # noqa: A001
     _title(f"Applying code formatters{suffix}")
     ctx.run(f"uv run ruff format src{' --check' if check else ''}")
     ctx.run(f"uv run ruff check --select I{' --fix' if not check else ''} src")
+    if check:
+        ctx.run(
+            'uv run djangofmt . && git diff --exit-code -- "*.html" || '
+            '(echo "HTML templates are not formatted. Run \'djangofmt\' to fix."    && exit 1)'
+        )
+    else:
+        ctx.run("uv run djangofmt .")
 
 
 @invoke.task
