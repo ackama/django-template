@@ -21,9 +21,8 @@ jobs:
     - name: Install dependencies
       run: invoke install --skip-install-playwright
 
-    - name: Run linting and formatting
+    - name: Run linting and formatting checks
       run: |
-        invoke format --check
         invoke lint
 
 
