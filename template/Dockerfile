@@ -1,7 +1,7 @@
 # Packaging Stage
 # ===============
 
-FROM python:3.12.8-slim-bookworm AS packager
+FROM python:3.14.4-slim-trixie AS packager
 ENV PYTHONUNBUFFERED=1
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 COPY README.md pyproject.toml uv.lock /source/
@@ -17,7 +17,7 @@ RUN rm -rf dist \
 # Building Stage
 # ==============
 
-FROM python:3.12.8-slim-bookworm AS builder
+FROM python:3.14.4-slim-trixie AS builder
 ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && apt-get install -y \
@@ -45,7 +45,7 @@ RUN pip install --no-deps *.whl
 # Final Runtime
 # =============
 
-FROM python:3.12.8-slim-bookworm AS runtime
+FROM python:3.14.4-slim-trixie AS runtime
 ENV PYTHONUNBUFFERED=1
 
 ARG GIT_COMMIT_HASH
