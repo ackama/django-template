@@ -1,6 +1,6 @@
 # Django Template Project
 
-Expected Python Version: 3.12.x
+Expected Python Version: 3.14.x
 
 ## Purpose
 
