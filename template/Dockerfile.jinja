@@ -1,11 +1,24 @@
+{% if ts_integration %}
+# Asset Bundling Stage
+# ====================
+
+FROM node:24.15 AS assets
+COPY webpack.config.js tsconfig.json package.json package-lock.json /source/
+WORKDIR /source
+RUN npm cli
+
+COPY src/assets /source/src/assets/
+RUN npm run build 
+{% endif %}
 # Packaging Stage
 # ===============
 
-FROM python:3.14.4-slim-trixie AS packager
+FROM python:3.12.8-slim-bookworm AS packager
 ENV PYTHONUNBUFFERED=1
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 COPY README.md pyproject.toml uv.lock /source/
 COPY src /source/src/
+{% if ts_integration %}COPY --from=assets /source/src/{{ project_module }}/static/assets/ /source/src/{{ project_module }}/static/assets/{% endif %}
 WORKDIR /source/
 
 # Uses export to get a pinned list of requirements
@@ -17,7 +30,7 @@ RUN rm -rf dist \
 # Building Stage
 # ==============
 
-FROM python:3.14.4-slim-trixie AS builder
+FROM python:3.12.8-slim-bookworm AS builder
 ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && apt-get install -y \
@@ -45,7 +58,7 @@ RUN pip install --no-deps *.whl
 # Final Runtime
 # =============
 
-FROM python:3.14.4-slim-trixie AS runtime
+FROM python:3.12.8-slim-bookworm AS runtime
 ENV PYTHONUNBUFFERED=1
 
 ARG GIT_COMMIT_HASH

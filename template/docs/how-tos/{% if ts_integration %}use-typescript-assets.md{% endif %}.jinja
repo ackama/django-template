@@ -1,0 +1,91 @@
+---
+tags:
+  - Frontend
+  - Assets
+  - TypeScript
+  - How-To
+---
+# Build and Use TypeScript Assets in Templates
+
+This guide shows how to update frontend TypeScript assets and load them in
+Django templates.
+
+## 1. Update Asset Source
+
+Edit the TypeScript source in `src/assets/`. By default this is just
+`src/assets/main.ts` but your project may have other TypeScript (or even SCSS) assets
+available.
+
+## 2. Build Assets
+
+Run:
+
+```shell
+inv build-assets
+```
+
+If dependencies are already installed and unchanged, you can skip reinstalling
+npm packages:
+
+```shell
+inv build-assets --no-install-deps
+```
+
+After build, compiled files are written to:
+
+- `src/{{ project_module }}/static/assets/`
+
+## 3. Load the Built Asset in a Django Template
+
+Use Django's `static` template tag.
+{% raw %}
+
+```django
+{% load static %}
+<script src="{% static 'assets/main.js' %}"></script>
+```
+
+{% endraw %}
+Important:
+
+- Load the `static` tag before using it.
+- Reference the asset path as `assets/<filename>`.
+- Do not hardcode `/static/assets/...` URLs.
+
+## 4. Verify
+
+1. Confirm output exists in `src/{{ project_module }}/static/assets/`.
+2. Reload your page and check that the script request succeeds.
+3. If changes do not appear, perform a hard refresh to bypass browser cache.
+
+## Addition Notes
+
+### Formatting and Linting
+
+This project uses [Prettier][prettier] and the [Ackama eslint configuration][ak-eslint]
+for formatting and linting of TypeScript code.
+
+You can run these tools via the standard `invoke` tasks that are used for linting and
+formatting:
+
+- `invoke lint`
+- `invoke format`
+
+They can also be run directly with NPM if you only want to run for TypeScript:
+
+- `npm run lint`
+- `npm run format`
+
+You can also run the typescript compiler to check that your typing is consistent with:
+
+- `inv typing` or,
+- `npm run typecheck`
+
+### Asset building in Docker
+
+When you build the Docker image, frontend assets are rebuilt as part of the process.
+You do not need a separate runtime step in the container to compile assets.
+
+<!-- Links -->
+[prettier]: https://prettier.io/
+[ak-eslint]: https://github.com/ackama/eslint-config-ackama

@@ -1,0 +1,35 @@
+'use strict';
+
+const path = require('path');
+
+module.exports = {
+  entry: {
+    main: path.resolve(__dirname, 'src/assets/main.ts')
+  },
+  output: {
+    path: path.resolve(__dirname, 'src/{{ project_module }}/static/assets'),
+    filename: '[name].js',
+    chunkFilename: '[name].js',
+    assetModuleFilename: '[name][extname]',
+    publicPath: '/static/assets/'
+  },
+  resolve: {
+    extensions: ['.ts', '.js']
+  },
+  module: {
+    rules: [
+      {
+        test: /\.ts$/u,
+        exclude: /node_modules/u,
+        use: {
+          loader: 'ts-loader',
+          options: {
+            compilerOptions: {
+              noEmit: false
+            }
+          }
+        }
+      }
+    ]
+  }
+};
