@@ -1,0 +1,244 @@
+import datetime
+import zoneinfo
+
+import pytest
+import time_machine
+
+from {{ project_module }}.utils import temporal
+
+UTC = zoneinfo.ZoneInfo("UTC")
+
+
+@pytest.mark.parametrize(
+    ["value", "expected"],
+    [
+        pytest.param(
+            "2021-01-01", datetime.datetime(2021, 1, 1, tzinfo=UTC), id="iso_date"
+        ),
+        pytest.param(
+            "2021-01-01T12:00:00",
+            datetime.datetime(2021, 1, 1, 12, 0, 0, tzinfo=UTC),
+            id="iso_datetime",
+        ),
+        pytest.param(
+            "2021-01-01T12:00:00",
+            datetime.datetime(2021, 1, 1, 12, 0, 0, tzinfo=UTC),
+            id="iso_datetime",
+        ),
+        pytest.param(
+            "item.l01.20240826122411.csv",
+            datetime.datetime(2024, 8, 26, 12, 24, 11, tzinfo=UTC),
+            id="filename_no_punctuation",
+        ),
+        pytest.param(
+            "item.l01.2024-08-26 12:24:11.csv",
+            datetime.datetime(2024, 8, 26, 12, 24, 11, tzinfo=UTC),
+            id="filename_punctuation",
+        ),
+    ],
+)
+def test_can_extract_a_datetime_from_string(value: str, expected: datetime.datetime):
+    assert temporal.extract_datetime_from_string(value) == expected
+
+
+def test_can_extract_a_datetime_from_string_with_custom_delimiters():
+    assert temporal.extract_datetime_from_string(
+        "abc~def~20240826122411.csv", delimiters=["~", "."]
+    ) == datetime.datetime(2024, 8, 26, 12, 24, 11, tzinfo=UTC)
+
+
+@time_machine.travel("2024-10-21 12:00:00")
+def test_midnight_returns_midnight_in_system_timezone():
+    assert temporal.midnight() == datetime.datetime(2024, 10, 21, 0, 0, 0, tzinfo=UTC)
+
+
+def test_midnight_returns_midnight_of_specified_date_in_system_timezone():
+    assert temporal.midnight(datetime.date(2024, 10, 21)) == datetime.datetime(
+        2024, 10, 21, 0, 0, 0, tzinfo=UTC
+    )
+
+
+def test_midnight_returns_midnight_of_specified_datetime_in_system_timezone():
+    assert temporal.midnight(
+        datetime.datetime(2024, 10, 21, 12, 5, 21)
+    ) == datetime.datetime(2024, 10, 21, 0, 0, 0, tzinfo=UTC)
+
+
+@time_machine.travel("2024-10-21 12:00:00 +0000", tick=False)
+def test_now_returns_current_datetime_in_system_timezone():
+    assert temporal.now() == datetime.datetime(2024, 10, 21, 12, 0, 0, tzinfo=UTC)
+
+
+# DateRange
+# ----------
+
+
+def test_date_range_contains():
+    """Test if a datetime is within the range."""
+    date_range = temporal.DatetimeRange(
+        temporal.make_tz_aware(datetime.datetime(2025, 6, 1)),
+        temporal.make_tz_aware(datetime.datetime(2025, 6, 10)),
+    )
+
+    assert datetime.datetime(2025, 6, 5) in date_range
+    assert datetime.datetime(2025, 6, 1) in date_range
+    assert datetime.datetime(2025, 6, 10) not in date_range  # Exclusive end
+    assert datetime.datetime(2025, 5, 31) not in date_range
+
+
+def test_date_range_gt():
+    """Test if a datetime is before the start of the range."""
+    date_range = temporal.DatetimeRange(
+        temporal.make_tz_aware(datetime.datetime(2025, 6, 1)),
+        temporal.make_tz_aware(datetime.datetime(2025, 6, 10)),
+    )
+
+    assert datetime.datetime(2025, 5, 31) < date_range
+    assert date_range > datetime.datetime(2025, 5, 31)
+    assert not datetime.datetime(2025, 6, 1) < date_range
+
+
+def test_date_range_lt():
+    """Test if a datetime is after the end of the range."""
+    date_range = temporal.DatetimeRange(
+        temporal.make_tz_aware(datetime.datetime(2025, 6, 1)),
+        temporal.make_tz_aware(datetime.datetime(2025, 6, 10)),
+    )
+
+    assert datetime.datetime(2025, 6, 10) > date_range
+    assert date_range < datetime.datetime(2025, 6, 10)
+    assert not date_range < datetime.datetime(2025, 6, 9)
+
+
+def test_date_range_eq():
+    """Test equality between two temporal.DatetimeRange objects."""
+    range1 = temporal.DatetimeRange(
+        datetime.datetime(2025, 6, 1), datetime.datetime(2025, 6, 10)
+    )
+    range2 = temporal.DatetimeRange(
+        datetime.datetime(2025, 6, 1),
+        datetime.datetime(2025, 6, 10),
+    )
+    range3 = temporal.DatetimeRange(
+        datetime.datetime(2025, 6, 2), datetime.datetime(2025, 6, 10)
+    )
+
+    assert range1 == range2
+    assert range1 != range3
+
+
+def test_date_range_len():
+    """Test the length of the datetime range."""
+    date_range = temporal.DatetimeRange(
+        datetime.datetime(2025, 6, 1), datetime.datetime(2025, 6, 10)
+    )
+
+    assert len(date_range) == 9  # June 1 to June 10 is 9 days
+
+
+def test_date_range_repr():
+    """Test the string representation."""
+    date_range = temporal.DatetimeRange(
+        datetime.datetime(2025, 6, 1), datetime.datetime(2025, 6, 10)
+    )
+
+    assert (
+        repr(date_range)
+        == f"DatetimeRange(start={date_range.start}, end={date_range.end})"
+    )
+
+
+def test_date_range_invalid_comparisons():
+    """Ensure invalid types are handled properly."""
+    date_range = temporal.DatetimeRange(
+        datetime.datetime(2025, 6, 1), datetime.datetime(2025, 6, 10)
+    )
+
+    assert date_range != "2025-06-01"
+    assert date_range != 123
+
+
+def test_date_range_last_day():
+    date_range = temporal.DatetimeRange(
+        datetime.datetime(2025, 6, 1), datetime.datetime(2025, 6, 10)
+    )
+    assert date_range.last_day == datetime.date(2025, 6, 9)
+
+
+@pytest.mark.parametrize(
+    ["start", "end", "expected"],
+    [
+        pytest.param(
+            datetime.datetime(2024, 10, 1),
+            datetime.datetime(2024, 10, 10),
+            7,
+            id="more than a week",
+        ),
+        pytest.param(
+            datetime.datetime(2024, 10, 1),
+            datetime.datetime(2024, 10, 2),
+            1,
+            id="2 day",
+        ),
+        pytest.param(
+            datetime.datetime(2024, 10, 1),
+            datetime.datetime(2024, 10, 1),
+            0,
+            id="zero length",
+        ),
+        pytest.param(
+            datetime.datetime(2025, 2, 1),
+            datetime.datetime(2025, 2, 28),
+            19,
+            id="starts on a sat",
+        ),
+        pytest.param(
+            datetime.datetime(2025, 3, 2),
+            datetime.datetime(2025, 3, 8),
+            5,
+            id="starts and end on weekend",
+        ),
+    ],
+)
+def test_can_get_weekdays_for_a_range(start, end, expected):
+    date_range = temporal.DatetimeRange(start, end)
+    assert temporal.get_weekdays(date_range) == expected
+
+
+@pytest.mark.parametrize(
+    ["start", "end", "expected"],
+    [
+        pytest.param(
+            datetime.datetime(2024, 10, 1),
+            datetime.datetime(2024, 10, 10),
+            7,
+            id="more than a week",
+        ),
+        pytest.param(
+            datetime.datetime(2024, 10, 1),
+            datetime.datetime(2024, 10, 2),
+            1,
+            id="2 day",
+        ),
+        pytest.param(
+            datetime.datetime(2024, 10, 1),
+            datetime.datetime(2024, 10, 1),
+            0,
+            id="zero length",
+        ),
+        pytest.param(
+            datetime.datetime(2025, 2, 1),
+            datetime.datetime(2025, 2, 28),
+            19,
+            id="starts on a sat",
+        ),
+        pytest.param(
+            datetime.datetime(2025, 3, 2),
+            datetime.datetime(2025, 3, 8),
+            5,
+            id="starts and end on weekend",
+        ),
+    ],
+)
+def test_can_get_weekdays_between_two_dates(start, end, expected):
+    assert temporal.get_weekdays_between(start, end) == expected
