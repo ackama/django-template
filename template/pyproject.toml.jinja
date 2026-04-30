@@ -110,11 +110,12 @@ select = [
     "W", # pycodestyle (warnings)
     "S", # flake8-bandit
     "I", # isort
-    "C90"  # mccabe
+    "C90",  # mccabe
+    "DTZ",  # flake8-datetimez (use temporal utility)
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"src/tests/*" = ["S101"]
+"src/tests/*" = ["S101", "DTZ001"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 15
