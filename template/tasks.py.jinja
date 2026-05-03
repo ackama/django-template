@@ -69,7 +69,7 @@ def typing(ctx):
                 "\n"
                 "NOTE: mypy was run in daemon mode, which can lead to spurious\n"
                 "errors when changing branches.\n"
-                "If the errors observed do not make sense, or errors are occuring\n"
+                "If the errors observed do not make sense, or errors are occurring\n"
                 "on known-good code run `inv typing-daemon-stop` to stop the\n"
                 "dmypy daemon and run type checking again."
             )
@@ -110,7 +110,7 @@ def lint(ctx, fix=False):
 @invoke.task
 def check_migrations(ctx):
     """
-    Check for potential vulnerabilities in packages
+    Check for missing migrations
     """
     _title("Checking for missing migrations")
     try:

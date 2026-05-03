@@ -264,11 +264,11 @@ options:
     post.refresh_from_db()
     ```
 
-You are probably better off with building business logic around other field. Keep the
-`auto_now` and `auto_now_add` fields purely for auditing. For example if you are 
-recording events in the database consider adding both a `created_at` field which uses
+You are probably better off building business logic around other fields. Keep the
+`auto_now` and `auto_now_add` fields purely for auditing. For example, if you are
+recording events in the database, consider adding both a `created_at` field which uses
 `auto_now_add` and an `event_published_at` which does not. The `event_published_at` can
-still use a default like `timezone.now` but it is now possibly control the value it 
+still use a default like `timezone.now` but it is now possible to control the value it
 holds both during tests, and in code should you need to back-fill that table for
 some reason.
 

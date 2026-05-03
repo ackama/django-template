@@ -8,38 +8,38 @@
 
 We will continue to use [Uvicorn][uvicorn] in order to support running Django in an
 asynchronous (ASGI) manner. However, we will use it as a [Gunicorn][gunicorn] worker
-rather than in stand alone mode.
+rather than in standalone mode.
 
 ## Context
 
 In order to work with asynchronous views and functions, Django must be run within an
-ASGI host. For this we previously chose Uvicorn, in part becasue it makes use the Cython
-based uvloop to efficiently manage the event loop.
+ASGI host. For this we previously chose Uvicorn, in part because it makes use of the
+Cython based uvloop to efficiently manage the event loop.
 
 Uvicorn, because it focuses on asynchronous operations, runs as effectively a single
-process,  instead relying on asynchronous tasks to manage concurrency. This is fine when
+process, instead relying on asynchronous tasks to manage concurrency. This is fine when
 there is a low level of contention and the majority of tasks are co-operative and
 non-blocking. For greater resilience and for more easily achieving updates without
 dropping requests, [it is recommended][recommended] that Uvicorn is used as a _worker_
 inside a process manager. For this reason it provides a Gunicorn compatible worker.
 
 So Gunicorn handles the socket setup, start-up of multiple server processes, monitoring
-process aliveness, and listens for signals to provide for processes restarts, shutdowns,
-or dialing up and down the number of running processes. Uvicorn then handles each
+process aliveness, and listens for signals to provide for process restarts, shutdowns,
+or dialling up and down the number of running processes. Uvicorn then handles each
 individual request/response cycle.
 
 ## Implications
 
 This does introduce another moving part. It is however, a well known and commonly used
 component of a Django stack. The interaction of the two (Gunicorn and Uvicorn) may
-necessitate slightly different configuration that is usual in order to work together
-smoothly - something we won't know with any certainty until with try it under a
+necessitate slightly different configuration than is usual in order to work together
+smoothly – something we won't know with any certainty until we try it under a
 production-like load.
 
-It is worth noting that at the present time, neither Gunicorn or Uvicorn support
-HTTP/2.0 or above. The majority of the benefits of HTTP/2.0 come from it's ability to
+It is worth noting that at the present time, neither Gunicorn nor Uvicorn support
+HTTP/2.0 or above. The majority of the benefits of HTTP/2.0 come from its ability to
 multiplex requests. A feature that is of greatest benefit between the client and the
-server where latency is significant. It also requires the communication of occur over
+server where latency is significant. It also requires the communication to occur over
 a TLS connection. In most production deployments Gunicorn will be behind a reverse proxy
 such as Nginx. Nginx does support HTTP/2.0 as well as typically being used for TLS
 termination. Given that the reverse proxy should be within the same network as the

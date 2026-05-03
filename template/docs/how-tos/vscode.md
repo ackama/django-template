@@ -2,14 +2,14 @@
 tags:
     - vscode
 ---
-# Recommended Configuration for VSCode
+# Recommended Configuration for VS Code
 
-This document is a work in progress
+This document is a work in progress.
 
 ## Plugins
 
 - Python
-- markkdownlint
+- markdownlint
 - DotEnv
 - Docker
 - TOML Language Support
@@ -19,7 +19,7 @@ This document is a work in progress
 TODO: This is just _my_ overrides from the default user settings. Need something more
 comprehensive.
 
-In `.vscode/setting.json`
+In `.vscode/settings.json`
 
 ```json
 {

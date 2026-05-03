@@ -2,9 +2,9 @@ import os
 
 import pytest
 
-# Playwright runs in an asncio event loop - django's `async_unsafe` decorator checks for
-# the existence of an event loop and shouts out if finds one - this turns off the check
-# during testing. Not ideal and I'd like it to only apply when playright is used.
+# Playwright runs in an asyncio event loop - django's `async_unsafe` decorator checks
+# for the existence of an event loop and shouts out if it finds one - this turns off the
+# check during testing. Not ideal and I'd like it to only apply when playwright is used.
 os.environ.setdefault("DJANGO_ALLOW_ASYNC_UNSAFE", "true")
 
 
