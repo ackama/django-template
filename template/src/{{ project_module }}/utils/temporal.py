@@ -43,7 +43,7 @@ class DatetimeRange:
 
 
 def extract_datetime_from_string(
-    file_name: str, delimiters: abc.Iterable[str] = (".", "_")
+    value: str, delimiters: abc.Iterable[str] = (".", "_")
 ) -> datetime.datetime:
     """
     Attempt to extract the datetime from a string.
@@ -56,7 +56,7 @@ def extract_datetime_from_string(
 
     tzinfo = zoneinfo.ZoneInfo(settings.TIME_ZONE)
 
-    segments = re.split(split_pattern, file_name)
+    segments = re.split(split_pattern, value)
     file_date: datetime.datetime | None = None
     for segment in segments:
         try:
@@ -65,7 +65,7 @@ def extract_datetime_from_string(
         except parser.ParserError, OverflowError:
             pass
 
-    raise ValueError(f"Could not extract datetime from filename '{file_name}'")
+    raise ValueError(f"Could not extract datetime from filename '{value}'")
 
 
 def make_tz_aware(value: datetime.datetime | datetime.date) -> datetime.datetime:
