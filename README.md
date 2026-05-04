@@ -21,7 +21,7 @@ way to run copier is with [uvx][uvx]:
 uvx copier copy path/to/django-template <project_folder>
 ```
 
-You can pull the template directly from Github:
+You can pull the template directly from GitHub:
 
 ```shell
 uvx copier copy gh:ackama/django-template <project_folder>
@@ -31,21 +31,21 @@ This will ask you a series of questions to help you configure your project. The 
 you provide to these questions will also be recorded in your new project in a file
 called `.copier-answers.yml`.
 
-Running the copier command will create a new project in the folder specified in
+Running the copier command will create a new project in the folder specified
 with `<project_folder>`.
 
 > [!NOTE]
 > Copier has an `update` mode which allows you to change your answers to the setup
 > questions at a later date. Your current project _must_ be under git control for this
 > to work. It works pretty well but has not been tested here after lots of changes to
-> the project have be made since the copy. So use caution.
+> the project have been made since the copy. So use caution.
 
 ## Contributing
 
 If you have ideas for improvements, open a PR with your idea or propose it in the guild
-channel
+channel.
 
-Feature branches are encouraged, and merging should on consensus from guild
+Feature branches are encouraged, and merging should occur on consensus from the guild.
 
 <!-- Links -->
 [copier]: https://copier.readthedocs.io/en/stable/

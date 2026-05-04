@@ -7,18 +7,18 @@
 ## Context
 
 We want to ensure we start this project right. We need a way to ensure that potentially
-costly on contentious decisions that are made along the way are properly recorded.
+costly or contentious decisions that are made along the way are properly recorded.
 
 ## Decision
 
-We adopt a light weight log of architectural decision records of the important
+We adopt a lightweight log of architectural decision records of the important
 decisions made along the way. Each log entry is kept fairly simple, with 3 key headings:
 
 - **Context**: The background information relevant to the decision being
   recorded
 - **Decision**: The actual decision made
 - **Implications**: The intended outcomes and implications for the project, and
-  in particular an up-front or ongoing work that needs to be done to adopt the
+  in particular any up-front or ongoing work that needs to be done to adopt the
   decision made.
 
 The record should also provide basic metadata about itself:
@@ -28,8 +28,8 @@ The record should also provide basic metadata about itself:
 - The _status_ of the record:
     - `draft`, still in progress and not yet formally adopted
     - `active`, formally adopted
-    - `supersede`, has been replaced by a newer ADR (include a reference it)
-    - `obsolete`, not longer relevant but not directly superseded
+    - `superseded`, has been replaced by a newer ADR (include a reference to it)
+    - `obsolete`, no longer relevant but not directly superseded
 
 Not every feature or pull request needs an accompanying ADR, just those which have
 either a significant future impact or represent significant effort to arrive at.
@@ -44,13 +44,13 @@ made the decision in the first place) to misunderstand decisions that have been
 made or the implications of changing them.
 
 Ensuring these records are made and each new decision of significance is added
-does have a overhead - but likely considerably less than making future choices without
-the benefits of the historic decision records. Adopting a light weight approach to
-recording our decision making process also actively encourage a degree of forward think,
+does have an overhead – but likely considerably less than making future choices without
+the benefits of the historic decision records. Adopting a lightweight approach to
+recording our decision-making process also actively encourages a degree of forward thinking,
 emphasising the importance of a design phase for the more major undertakings.
 
 <!-- Links -->
 [jmoss]: mailto:jmoss@commoncode.io
 
 <!-- Abbreviations -->
-*[ADR]: Architectural Decisions Record
+*[ADR]: Architectural Decision Record

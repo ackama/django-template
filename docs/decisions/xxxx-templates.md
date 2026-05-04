@@ -12,7 +12,7 @@ The outcome this decision record is recording
 
 ## Context
 <!---
-The background discussion the covers the context of the decision. It should answer
+The background discussion that covers the context of the decision. It should answer
 questions such as:
 
 - What is the history of this decision?
@@ -23,7 +23,7 @@ questions such as:
 ## Implications
 <!---
 All technical decisions are compromises to some extent. The implications section is
-intented to highlight those compromises and can also be used to record triggers for
+intended to highlight those compromises and can also be used to record triggers for
 situations in which the decision should be reconsidered.
 --->
 

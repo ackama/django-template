@@ -6,7 +6,7 @@ tags:
 ---
 # Your First Day
 
-So it is your first day on the project, where do you start? Here!
+So, it's your first day on the project. Where do you start? Here!
 
 This tutorial will guide you through getting the project up and running as well as
 making your first update to the code.
@@ -25,14 +25,14 @@ installed.
 
 ### Windows
 
-For windows, us a PowerShell session:
+For Windows, use a PowerShell session:
 
 ```shell
 PS> powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
 !!! note
-    Changing the execution policy to `ByPAss` is needed to allow running a script from
+    Changing the execution policy to `ByPass` is needed to allow running a script from
     the internet.
 
 ## Preparing your Development Environment
@@ -47,20 +47,20 @@ We also make extensive use of [`invoke`][invoke]. It can be installed globally u
 uv tool install invoke
 ```
 
-All developer tasks (testing linting, formatting etc) can be run via `invoke`. Run
+All developer tasks (testing, linting, formatting, etc.) can be run via `invoke`. Run
 `invoke -l` to get a list of tasks available.
 
 ## Checking out the project
 
 Now that everything is prepared, you can get to checking out a copy of the project from
-Github and completing the setup.
+GitHub and completing the setup.
 
 ```shell
 git clone git@github.com:ackama/{{ project_module }}.git
 ```
 
-The change directory into your newly cloned copy of the source code and complete the
-set up:
+Then change directory into your newly cloned copy of the source code and complete the
+setup:
 
 ```shell
 cd {{ project_module }}
@@ -85,11 +85,11 @@ You are now all set to make your first change!
 Your first change will be to add yourself to the list of humans who have worked on the
 project.
 
-This project uses a simple [trunk based][trunkbased] approach to developing features
-with short-lived feature branches. So your first step making a change should always be
+This project uses a simple [trunk-based][trunkbased] approach to developing features
+with short-lived feature branches. So your first step when making a change should always be
 to create a new feature branch.
 
-Within a terminal opened at the root of this project type:
+Within a terminal opened at the root of this project, type:
 
 ```shell
 git checkout -b add_name_to_humans_txt
@@ -99,10 +99,10 @@ This will create a new branch for your change.
 
 Your change will be in `src/templates/pages/humans.txt`. Open this file and add
 yourself! There is at least one example in there already you can copy. If you don't feel
-comfortable sharing your Github name or general location that is fine, you do not need
+comfortable sharing your GitHub name or general location that is fine, you do not need
 to provide them.
 
-Once you have made you change we need to commit it:
+Once you have made your change we need to commit it:
 
 ```shell
 git add src/templates/pages/humans.txt
@@ -110,24 +110,24 @@ git commit -m "Adds me to the list of humans involved in this project"
 ```
 
 This will first stage the change with the `git add` then commit to the change with the
-`git commit`. For day to day commits we would expect a little more detail in the commit
+`git commit`. For day-to-day commits we would expect a little more detail in the commit
 message, but for this first day the above message is fine.
 
-Next we need to create a pull request so others can review and approve you change.
+Next we need to create a pull request so others can review and approve your change.
 
 ```shell
 git push origin add_name_to_humans_txt
 ```
 
-This will push your branch up to Github. You can then use the Github website itself to
-create the pull request - note that output from the `git push` actually includes a link
-to Github that will take you straight to the correct place to do this.
+This will push your branch up to GitHub. You can then use the GitHub website itself to
+create the pull request - note that the output from the `git push` command actually includes a link
+to GitHub that will take you straight to the correct place to do this.
 
-Please provide a description of the change you are making, why you are making it and
-ideally some pointers for the reviewer that would allow them to double check the change
+Please provide a description of the change you are making, why you are making it, and
+ideally some pointers for the reviewer that would allow them to double-check the change
 is acting as intended.
 
-Now you wait. A team member will review your changes and assuming they are happy with it
+Now you wait. A team member will review your changes and, assuming they are happy with it,
 approve the change. Once they do you can click the `merge` button and add your change to
 the `main` branch.
 
@@ -135,7 +135,7 @@ You can view your change once deployed at `https://<hostname>/humans.txt`
 
 !!! note
     As a second change, consider the tutorial you just completed. Were any of the steps
-    unclear? Did anything just _not_ work? Create new branch from the `main` branch and
+    unclear? Did anything just _not_ work? Create a new branch from the `main` branch and
     update this tutorial with anything you think needs fixing up. You can find the
     source for this tutorial at `docs/tutorials/your-first-day.md`
 
