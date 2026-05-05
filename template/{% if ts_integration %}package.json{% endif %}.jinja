@@ -1,0 +1,47 @@
+{
+  "name": "main",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "^24.0.0"
+  },
+  "scripts": {
+    "dev": "webpack --mode=development --watch",
+    "build": "webpack --mode=production",
+    "preview": "webpack --mode=development",
+    "format": "prettier --write .",
+    "format-check": "prettier --check .",
+    "lint": "eslint .",
+    "lint-fix": "eslint --fix .",
+    "typecheck": "tsc -p . --noEmit"
+  },
+  "prettier": "prettier-config-ackama",
+  "dependencies": {
+    {% if use_htmx %}"htmx.org": "^2.0.8"{% endif %}
+  },
+  "devDependencies": {
+    "@eslint-community/eslint-plugin-eslint-comments": "^4.7.1",
+    "@eslint/js": "^9.39.4",
+    "@stylistic/eslint-plugin-js": "^4.4.1",
+    "@stylistic/eslint-plugin-ts": "^4.4.1",
+    "@types/eslint": "^9.6.1",
+    "@types/webpack-dev-server": "^4.7.1",
+    "@typescript-eslint/eslint-plugin": "^8.59.1",
+    "eslint": "^9.39.4",
+    "eslint-config-ackama": "^4.4.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jest": "^29.15.2",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-n": "^17.24.0",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-ts": "^1.0.0",
+    "prettier": "^3.8.3",
+    "prettier-config-ackama": "^1.3.0",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.8.3",
+    "webpack": "^5.101.3",
+    "webpack-cli": "^6.0.1"
+  }
+}

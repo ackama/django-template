@@ -7,76 +7,75 @@ jobs:
     name: Static analysis Checks
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v7
-      with:
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
           enable-cache: true
 
-    - name: Install tooling
-      run: uv tool install invoke
+      - name: Install tooling
+        run: uv tool install invoke
 
-    - name: Install dependencies
-      run: invoke install --skip-install-playwright
+      - name: Install dependencies
+        run: invoke install --skip-install-playwright
 
-    - name: Run linting and formatting checks
-      run: |
-        invoke lint
-
+      - name: Run linting and formatting checks
+        run: |
+          invoke lint
 
   type-checking:
     name: Type Checking
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v7
-      with:
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
           enable-cache: true
 
-    - name: Install tooling
-      run: uv tool install invoke
+      - name: Install tooling
+        run: uv tool install invoke
 
-    - name: Install dependencies
-      run: |
-        invoke install --skip-install-playwright
-        cp example.env .env
+      - name: Install dependencies
+        run: |
+          invoke install --skip-install-playwright
+          cp example.env .env
 
-    - name: Run type-checking
-      run: invoke typing
+      - name: Run type-checking
+        run: invoke typing
 
   documentation-building:
     name: Documentation Building
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v7
-      with:
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
           enable-cache: true
 
-    - name: Install tooling
-      run: uv tool install invoke
+      - name: Install tooling
+        run: uv tool install invoke
 
-    - name: Install dependencies
-      run: |
-        invoke install --skip-install-playwright
+      - name: Install dependencies
+        run: |
+          invoke install --skip-install-playwright
 
-    - name: Build the documentation
-      # When running the ci locally using act, MkDocs build fails at "make html" with
-      # `ValueError: ZoneInfo keys may not be absolute paths, got: /UTC.`
-      # It seems to be a timezone related issue that arises from the interaction of the
-      # Python packages babel & zoneinfo.
-      # setting `TZ=UTC` is a work around here to bypass that error.
-      # NOTE: it runs fine when pushing to Github, but unfortunately not in act.
-      # link to issue on act repository: https://github.com/nektos/act/issues/1853
-      run: TZ=UTC uv invoke build-docs
+      - name: Build the documentation
+        # When running the ci locally using act, MkDocs build fails at "make html" with
+        # `ValueError: ZoneInfo keys may not be absolute paths, got: /UTC.`
+        # It seems to be a timezone related issue that arises from the interaction of the
+        # Python packages babel & zoneinfo.
+        # setting `TZ=UTC` is a work around here to bypass that error.
+        # NOTE: it runs fine when pushing to Github, but unfortunately not in act.
+        # link to issue on act repository: https://github.com/nektos/act/issues/1853
+        run: TZ=UTC uv invoke build-docs
 
   run-system-tests:
     name: Run System Test Suite
@@ -89,42 +88,40 @@ jobs:
           POSTGRES_USER: dev
           POSTGRES_PASSWORD: dev_password
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
         ports:
-            # Allows us to use the same env config used locally by mapping to port to
-            # the test runner container.
-            - 5432:5432
+          # Allows us to use the same env config used locally by mapping to port to
+          # the test runner container.
+          - 5432:5432
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v7
-      with:
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
           enable-cache: true
 
-    - name: Install tooling
-      run: uv tool install invoke
+      - name: Install tooling
+        run: uv tool install invoke
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
 
-        # Project System Dependencies
-        sudo apt-get install -y \
-          build-essential \
-          libffi-dev \
-          libpq-dev
+          # Project System Dependencies
+          sudo apt-get install -y \
+            build-essential \
+            libffi-dev \
+            libpq-dev
 
-        invoke install --skip-install-playwright
-        cp example.env .env
+          invoke install --skip-install-playwright
+          cp example.env .env
 
-    - name: Run the system test suite
-      run: invoke test --suite=system
+      - name: Run the system test suite
+        run: invoke test --suite=system
 
   run-functional-tests:
     name: Run Functional Test Suite
@@ -137,49 +134,49 @@ jobs:
           POSTGRES_USER: dev
           POSTGRES_PASSWORD: dev_password
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
         ports:
-            # Allows us to use the same env config used locally by mapping to port to
-            # the test runner container.
-            - 5433:5432
+          # Allows us to use the same env config used locally by mapping to port to
+          # the test runner container.
+          - 5433:5432
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v7
-      with:
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
           enable-cache: true
 
-    - name: Install tooling
-      run: uv tool install invoke
+      - name: Install tooling
+        run: uv tool install invoke
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
 
-        # Project System Dependencies
-        sudo apt-get install -y \
-          build-essential \
-          libffi-dev \
-          libpq-dev
+          # Project System Dependencies
+          sudo apt-get install -y \
+            build-essential \
+            libffi-dev \
+            libpq-dev
 
-        invoke install
-        cp example.env .env
+          invoke install
+          cp example.env .env
 
-      # Since there are separate jobs for running system and functional tests
-      # independently, and we use different ports to access the database, the following
-      # configuration sets up the environment variable to point to the correct database
-      # URL.
-    - name: Set DATABASE_URL for functional tests
-      run: echo "DATABASE_URL=postgres://dev:dev_password@localhost:5433/dev" >> $GITHUB_ENV
+        # Since there are separate jobs for running system and functional tests
+        # independently, and we use different ports to access the database, the following
+        # configuration sets up the environment variable to point to the correct database
+        # URL.
+      - name: Set DATABASE_URL for functional tests
+        run:
+          echo "DATABASE_URL=postgres://dev:dev_password@localhost:5433/dev" >>
+          $GITHUB_ENV
 
-    - name: Run the functional test suite
-      run: invoke test --suite=functional
+      - name: Run the functional test suite
+        run: invoke test --suite=functional
 
   build-docker-image:
     name: Build Docker Image
@@ -199,38 +196,36 @@ jobs:
           POSTGRES_PASSWORD: dev_password
           POSTGRES_DB: dev
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
         ports:
-            - 5432:5432
+          - 5432:5432
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
-      with:
-        # The tag applied to the Docker image we build is based on the number of commits
-        # on the current branch. This is only accurate when you have a _full_ checkout.
-        fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          # The tag applied to the Docker image we build is based on the number of commits
+          # on the current branch. This is only accurate when you have a _full_ checkout.
+          fetch-depth: 0
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v7
-      with:
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
           enable-cache: true
 
-    - name: Install tooling
-      run: uv tool install invoke
+      - name: Install tooling
+        run: uv tool install invoke
 
-    - name: Setup environment variables
-      run: |
-        cp example.env .env
+      - name: Setup environment variables
+        run: |
+          cp example.env .env
 
-    - name: Build service Docker Image
-      run: invoke build-image
+      - name: Build service Docker Image
+        run: invoke build-image
 
-    - name: Run service Docker image
-      # Since we are running the app in docker we need to ensure it attaches to the same
-      # virtual network.
-      run: |
-        invoke run-image --network ${{ job.container.network }} --command check
+      - name: Run service Docker image
+        # Since we are running the app in docker we need to ensure it attaches to the same
+        # virtual network.
+        run: |
+          invoke run-image --network ${{ job.container.network }} --command check

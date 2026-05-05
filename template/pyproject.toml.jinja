@@ -19,6 +19,7 @@ dependencies = [
     "httptools>=0.7.1,<1",
     "python-dateutil>=2.9.0,<3",
     {% if use_feature_toggles %}"django-waffle>=5.0.0,<6",{% endif %}
+    {% if use_htmx %}"django-htmx>=1.27.0,<2",{% endif %}
 ]
 
 [project.scripts]
