@@ -1,0 +1,188 @@
+# Working with Dates and Times
+
+Datetime handling is a common source of subtle bugs in Django projects. Problems tend
+to show up as off-by-one-day behaviour around midnight, surprising results when
+daylight saving time changes, or tests that pass locally but fail in continuous
+integration.
+
+This document follows a few simple conventions:
+
+- Use timezone-aware datetimes throughout the codebase.
+- Use the `{{ project_module }}.utils.temporal` helpers instead of `datetime.now()`.
+- Treat "now" as a dependency (prefer passing it into business logic).
+- Freeze time in tests when you need to.
+
+## Avoiding Naive Datetimes
+
+A naive datetime is a `datetime` with no timezone information (`tzinfo=None`). Once a
+naive datetime enters your system, it's not obvious what it represents: UTC, server
+local time, or a user's timezone.
+
+To keep this consistent, Ruff is configured with `flake8-datetimez` rules. When you
+see an error like:
+
+```
+DTZ005 `datetime.datetime.now()` called without a `tz` argument
+```
+
+the intended fix is to use the project's temporal utilities.
+
+## The Temporal Utility Module
+
+Use `{{ project_module }}.utils.temporal` for getting the current time and date.
+These helpers return timezone-aware values and respect `settings.TIME_ZONE`.
+
+| ❌ Don't use | ✅ Use instead |
+|--------------|----------------|
+| `datetime.datetime.now()` | `temporal.now()` |
+| `datetime.datetime.today()` | `temporal.today()` |
+| `datetime.date.today()` | `temporal.today()` |
+
+```python
+from {{ project_module }}.utils import temporal
+
+current_time = temporal.now()
+today = temporal.today()
+```
+
+For the full list of functions, see `src/{{ project_module }}/utils/temporal.py`.
+
+## Writing Testable Code
+
+To keep business logic easy to unit test, prefer calling `temporal.now()` at the
+boundary of the system (views, tasks, commands) and passing the value down as a
+parameter.
+
+```python
+import datetime
+
+from django.shortcuts import get_object_or_404, render
+
+from {{ project_module }}.utils import temporal
+
+
+def calculate_expiry(subscription, as_of: datetime.datetime) -> datetime.date:
+    return as_of.date() + datetime.timedelta(days=subscription.duration)
+
+
+def subscription_detail(request, subscription_id):
+    subscription = get_object_or_404(Subscription, id=subscription_id)
+    now = temporal.now()
+    expiry = calculate_expiry(subscription, as_of=now)
+    return render(request, "subscription.html", {"expiry": expiry})
+```
+
+When a function takes `as_of` (or similar), tests can pass a specific datetime
+directly, and you usually don't need a time-freezing library.
+
+## Testing with Datetimes
+
+Datetime-related flakiness is very common. If a test depends on "now" or on timezone
+conversions, freeze time so the test always runs in a predictable timeline.
+
+!!! warning "Tests that depend on `now` should freeze time"
+
+    If a test reads the current time or manipulates timezones, make it explicit.
+    Either pass an `as_of` value into the code under test, or freeze time.
+
+### Freezing Time with time-machine
+
+```python
+import datetime
+
+import time_machine
+
+
+@time_machine.travel("2026-05-04 14:30:00+00:00", tick=False)
+def test_view_shows_current_date(client):
+    response = client.get("/dashboard/")
+    assert response.context["today"] == datetime.date(2026, 5, 4)
+```
+
+## Timezones in Django: Storage vs Display
+
+Two settings matter here:
+
+- `USE_TZ`: whether Django uses timezone-aware datetimes.
+- `TIME_ZONE`: the default timezone used for conversions and display.
+
+When `USE_TZ = True`, Django stores datetimes in UTC in the database, regardless of what
+`TIME_ZONE` is set to. (This aligns with how Postgres treats `timestamp with time zone`:
+values are stored in UTC and converted on output.)
+
+`TIME_ZONE` still matters because it is the default "current timezone" used for
+display and conversions.
+
+### Does Django know the user's timezone?
+
+Not automatically. Django will use `TIME_ZONE` unless you explicitly activate a
+timezone for the current request.
+
+If you want per-user timezones, activate one (usually in middleware):
+
+```python
+import zoneinfo
+
+from django.utils import timezone
+
+
+def user_timezone_middleware(get_response):
+    def middleware(request):
+        # Replace this with your own user/profile lookup.
+        tz = zoneinfo.ZoneInfo("Australia/Melbourne")
+        timezone.activate(tz)
+        try:
+            return get_response(request)
+        finally:
+            timezone.deactivate()
+
+    return middleware
+```
+
+If your application only really cares about a single local timezone, it can be
+simpler to set `TIME_ZONE` to that timezone and keep it consistent across the app.
+
+## Common Patterns
+
+### Importing External Data
+
+External systems often provide datetime strings without timezone information. Convert
+them to timezone-aware datetimes as early as possible.
+
+```python
+import csv
+import datetime
+
+from {{ project_module }}.utils import temporal
+
+
+def import_events_from_csv(file):
+    for row in csv.DictReader(file):
+        naive_dt = datetime.datetime.strptime(row["event_date"], "%Y-%m-%d %H:%M")
+        aware_dt = temporal.make_tz_aware(naive_dt)
+        Event.objects.create(name=row["name"], starts_at=aware_dt)
+```
+
+### Displaying Datetimes in Templates
+
+The `date` and `time` filters display datetimes in the current timezone (which
+defaults to `TIME_ZONE` unless you've activated something else).
+
+{% raw %}
+```django
+{{ event.starts_at|date:"Y-m-d H:i" }}
+
+{# Without a filter you'll generally see the stored timezone (UTC) #}
+{{ event.starts_at }}
+
+{# Or specify a timezone explicitly #}
+{{ event.starts_at|timezone:"Australia/Sydney"|date:"Y-m-d H:i" }}
+```
+{% endraw %}
+
+## Quick Reference
+
+- Use `{{ project_module }}.utils.temporal` instead of `datetime.now()`.
+- Prefer passing `as_of`/`now` into business logic.
+- Freeze time with `time-machine` when a test depends on "now".
+- With `USE_TZ = True`, storage is UTC; `TIME_ZONE` controls default display.
