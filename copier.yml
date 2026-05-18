@@ -20,3 +20,14 @@ use_feature_toggles:
     type: bool
     help: Do you want support for feature toggles?
     default: true
+
+ts_integration:
+    type: bool
+    help: Do you want to build static assets with TypeScript?
+    default: false
+
+use_htmx:
+    type: bool
+    help: Do you want to use htmx for dynamic frontend interactions?
+    when: "{{ ts_integration }}"
+    default: false
