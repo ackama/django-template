@@ -8,6 +8,7 @@ import invoke
 #############
 
 PACKAGE = "{{ project_module }}"
+ROOT_DIR = pathlib.Path(__file__).parent
 
 ###################
 # GETTING STARTED #
@@ -61,7 +62,7 @@ def typing(ctx):
     _title("Type checking")
     # PYTHONPATH must include the `src` folder for django-stubs to find the settings
     # module
-    src_path = str((pathlib.Path() / "src").absolute())
+    src_path = str((ROOT_DIR / "src").absolute())
     with ctx.prefix(f"export PYTHONPATH=${{PYTHONPATH}}:{src_path}"):
         try:
             ctx.run(f"uv run dmypy run -- src/{PACKAGE}")
@@ -258,7 +259,7 @@ def run_image(
     _title("Running Docker image 🐳")
 
     tag = tag or _build_data(ctx).tag
-    network = network or f"{PACKAGE}_default"
+    network = network or f"{ROOT_DIR.name}_default"
     env_file = env_file or ".env"
     database_url = database_url or "postgres://dev:dev_password@db:5432/dev"
 
