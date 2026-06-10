@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     {% if use_feature_toggles %}"waffle",{% endif %}
     # Local
     "{{ project_module }}.accounts",
+    {% if use_feature_toggles %}"{{ project_module }}.flags",{% endif %}
 ]
 
 MIDDLEWARE = [
@@ -175,6 +176,10 @@ WAFFLE_SAMPLE_DEFAULT = 0.0
 WAFFLE_CREATE_MISSING_SWITCHES = True
 WAFFLE_CREATE_MISSING_FLAGS = True
 WAFFLE_CREATE_MISSING_SAMPLES = True
+# Custom models that report each evaluation to Sentry
+WAFFLE_FLAG_MODEL = "flags.Flag"
+WAFFLE_SWITCH_MODEL = "flags.Switch"
+WAFFLE_SAMPLE_MODEL = "flags.Sample"
 {% endif %}
 # Sentry
 sentry_sdk.init(

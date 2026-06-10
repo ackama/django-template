@@ -1,0 +1,66 @@
+from collections.abc import Iterator
+from decimal import Decimal
+
+import pytest
+import sentry_sdk
+import waffle
+from django.test import RequestFactory
+
+from {{ project_module }}.flags import models
+
+
+@pytest.fixture(autouse=True)
+def clear_sentry_flag_buffer() -> Iterator[None]:
+    sentry_sdk.get_isolation_scope().flags.clear()
+    yield
+    sentry_sdk.get_isolation_scope().flags.clear()
+
+
+@pytest.mark.django_db
+def test_switch_evaluation_is_reported_to_sentry() -> None:
+    models.Switch.objects.create(name="test_switch", active=True)
+
+    assert waffle.switch_is_active("test_switch")
+    assert {"flag": "test_switch", "result": True} in (
+        sentry_sdk.get_isolation_scope().flags.get()
+    )
+
+
+@pytest.mark.django_db
+def test_inactive_switch_is_reported_with_false_result() -> None:
+    models.Switch.objects.create(name="off_switch", active=False)
+
+    assert not waffle.switch_is_active("off_switch")
+    assert {"flag": "off_switch", "result": False} in (
+        sentry_sdk.get_isolation_scope().flags.get()
+    )
+
+
+@pytest.mark.django_db
+def test_flag_evaluation_is_reported_to_sentry(rf: RequestFactory) -> None:
+    models.Flag.objects.create(name="test_flag", everyone=True)
+
+    assert waffle.flag_is_active(rf.get("/"), "test_flag")
+    assert {"flag": "test_flag", "result": True} in (
+        sentry_sdk.get_isolation_scope().flags.get()
+    )
+
+
+@pytest.mark.django_db
+def test_sample_evaluation_is_reported_to_sentry() -> None:
+    models.Sample.objects.create(name="test_sample", percent=Decimal("100.0"))
+
+    assert waffle.sample_is_active("test_sample")
+    assert {"flag": "test_sample", "result": True} in (
+        sentry_sdk.get_isolation_scope().flags.get()
+    )
+
+
+@pytest.mark.django_db
+def test_inactive_sample_is_reported_with_false_result() -> None:
+    models.Sample.objects.create(name="off_sample", percent=Decimal("0.0"))
+
+    assert not waffle.sample_is_active("off_sample")
+    assert {"flag": "off_sample", "result": False} in (
+        sentry_sdk.get_isolation_scope().flags.get()
+    )
