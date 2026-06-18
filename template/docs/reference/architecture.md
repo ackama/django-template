@@ -171,6 +171,15 @@ inv test --suite system     # just system tests
 inv test --suite functional # just functional tests
 ```
 
+### Parallel Execution
+
+Tests run in parallel across multiple processes via [pytest-xdist][pytest-xdist]
+(enabled with `-n auto` in `addopts`), which speeds up large test suites considerably. The
+trade-off is that **test independence matters even more than usual**: tests are
+distributed across workers and run in a non-deterministic order, so any test that relies
+on shared mutable state, leaks data between cases, or depends on another test having run
+first will fail intermittently and unpredictably. Keep each test self-contained.
+
 ### Factories & Fixtures
 
 - **`tests/factories/`** - test data factories built with
@@ -255,6 +264,7 @@ the go-to command for running the full QA suite before pushing.
 [uvicorn]: https://www.uvicorn.org/
 [entrypoint]: entrypoint.md
 [playwright]: https://playwright.dev/python/
+[pytest-xdist]: https://pytest-xdist.readthedocs.io/
 [factory-boy]: https://factoryboy.readthedocs.io/
 [factories-howto]: ../how-tos/factories.md
 [pytest-fixtures]: https://docs.pytest.org/en/stable/fixture.html
