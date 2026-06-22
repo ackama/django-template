@@ -1,7 +1,10 @@
 from pathlib import Path
+from urllib.parse import urlencode
 
 import environ
 import sentry_sdk
+from django.utils.csp import CSP
+from sentry_sdk import utils as sentry_utils
 from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,6 +44,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "django.middleware.csp.ContentSecurityPolicyMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -104,6 +108,13 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = "accounts.User"
 
 # Security Settings
+SECURE_CSP: dict[str, list[str]] = {
+    # Fetch directives
+    "default-src": [CSP.SELF],
+    # Navigation directives
+    "form-action": [CSP.SELF],
+    "frame-ancestors": [CSP.NONE],
+}
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
@@ -177,9 +188,13 @@ WAFFLE_CREATE_MISSING_FLAGS = True
 WAFFLE_CREATE_MISSING_SAMPLES = True
 {% endif %}
 # Sentry
+
+SENTRY_DSN: str | None = env("SENTRY_DSN", default=None)
+SENTRY_ENV: str = env("SENTRY_ENV", default="production")
+
 sentry_sdk.init(
-    dsn=env("SENTRY_DSN", default=None),
-    environment=env("SENTRY_ENV", default="production"),
+    dsn=SENTRY_DSN,
+    environment=SENTRY_ENV,
     release=GIT_COMMIT_HASH,
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for tracing.
@@ -192,5 +207,21 @@ sentry_sdk.init(
         DjangoIntegration(),
     ],
 )
+
+if SENTRY_DSN:
+    # Report Content Security Policy violations to Sentry's Security Header endpoint.
+    # See also: https://docs.sentry.io/platforms/python/security-policy-reporting/
+    _dsn = sentry_utils.Dsn(SENTRY_DSN)
+    _query = urlencode(
+        {
+            "sentry_key": _dsn.public_key,
+            "sentry_environment": SENTRY_ENV,
+            "sentry_release": GIT_COMMIT_HASH,
+        }
+    )
+    SECURE_CSP["report-uri"] = [
+        f"{_dsn.scheme}://{_dsn.netloc}{_dsn.path}api/{_dsn.project_id}/security/?{_query}"
+    ]
+
 # Ignore unwanted errors (Optional)
 # sentry_sdk.integrations.logging.ignore_logger("django.security.DisallowedHost")
