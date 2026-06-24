@@ -39,6 +39,13 @@ jobs:
           EOF
           uvx copier copy . --data-file answers.yml -f tp
 
+      # Copier does not generate the lockfiles required by the Dockerfile.
+      - name: Generate lock files in the generated project
+        run: |
+          cd tp
+          uv lock
+          npm install --package-lock-only
+
       # act requires the workflow's directory to be a git repository.
       - name: Initialise git in the generated project
         run: |
