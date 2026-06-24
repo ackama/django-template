@@ -228,4 +228,4 @@ jobs:
         # Since we are running the app in docker we need to ensure it attaches to the same
         # virtual network.
         run: |
-          invoke run-image --network ${{ job.container.network }} --command check
+          invoke run-image --network "${{ job.container.network }}" --command check
