@@ -75,7 +75,7 @@ jobs:
         # setting `TZ=UTC` is a work around here to bypass that error.
         # NOTE: it runs fine when pushing to Github, but unfortunately not in act.
         # link to issue on act repository: https://github.com/nektos/act/issues/1853
-        run: TZ=UTC uv invoke build-docs
+        run: TZ=UTC invoke build-docs
 
   run-system-tests:
     name: Run System Test Suite
