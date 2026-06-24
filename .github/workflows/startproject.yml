@@ -66,4 +66,9 @@ jobs:
       - name: Run the generated project's CI workflow with act
         run: |
           cd tp
-          act push -P ubuntu-latest=catthehacker/ubuntu:act-latest
+          # act runs jobs concurrently by default, sharing a single host
+          # toolcache between the job containers. astral-sh/setup-uv installs uv
+          # to a shared path, so one job writing the binary while another execs
+          # it produces an ETXTBSY ("Text file busy") race. Run jobs serially to
+          # avoid this; real GitHub Actions isolates each job on its own runner.
+          act push -P ubuntu-latest=catthehacker/ubuntu:act-latest --concurrent-jobs 1
