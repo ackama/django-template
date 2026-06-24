@@ -19,7 +19,7 @@ SECRET_KEY: str = env("SECRET_KEY")
 DEBUG: bool = env.bool("DEBUG", default=False)
 ALLOWED_HOSTS: list[str] = env.list("ALLOWED_HOSTS", default=[])
 GIT_COMMIT_HASH: str = env("GIT_COMMIT_HASH")
-GIT_COMMIT_TIME: str = env.int("GIT_COMMIT_TIME")
+GIT_COMMIT_TIME: int = env.int("GIT_COMMIT_TIME")
 GIT_COMMIT_COUNT: int = env.int("GIT_COMMIT_COUNT")
 
 
