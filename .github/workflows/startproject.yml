@@ -15,22 +15,6 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: dev
-          POSTGRES_PASSWORD: dev_password
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-            # Allows us to use the same env config used locally by mapping to port to
-            # the test runner container.
-            - 5432:5432
-
     steps:
       - uses: actions/checkout@v6
         with:
@@ -38,19 +22,6 @@ jobs:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
-
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update
-
-          # Project System Dependencies
-          sudo apt-get install -y \
-            build-essential \
-            libffi-dev \
-            libpq-dev
-
-      - name: Set up Python
-        run: uv python install 3.14
 
       - name: Create test project
         # tp is used as prettier will reformat files if the name is too long, 
@@ -68,13 +39,36 @@ jobs:
           EOF
           uvx copier copy . --data-file answers.yml -f tp
 
-      - name: Install test project
+      # Copier does not generate the lockfiles required by the Dockerfile.
+      - name: Generate lock files in the generated project
         run: |
           cd tp
-          uvx invoke install
+          uv lock
+          npm install --package-lock-only
 
-      - name: Check test project is valid
+      # act requires the workflow's directory to be a git repository.
+      - name: Initialise git in the generated project
         run: |
           cd tp
-          cp example.env .env
-          uvx invoke check
+          git init --quiet
+          git add --all
+          git -c user.email=hello@ackama.com -c user.name=CI commit --quiet --message="Initial commit"
+
+      # Run the generated project's own CI workflow (`.github/workflows/ci.yml`)
+      # end-to-end with `act`.
+      - name: Install act
+        env:
+          ACT_VERSION: v0.2.89
+        run: |
+          curl -sSfL "https://raw.githubusercontent.com/nektos/act/${ACT_VERSION}/install.sh" \
+            | sudo bash -s -- -b /usr/local/bin "${ACT_VERSION}"
+
+      - name: Run the generated project's CI workflow with act
+        run: |
+          cd tp
+          # act runs jobs concurrently by default, sharing a single host
+          # toolcache between the job containers. astral-sh/setup-uv installs uv
+          # to a shared path, so one job writing the binary while another execs
+          # it produces an ETXTBSY ("Text file busy") race. Run jobs serially to
+          # avoid this; real GitHub Actions isolates each job on its own runner.
+          act push -P ubuntu-latest=catthehacker/ubuntu:act-latest --concurrent-jobs 1

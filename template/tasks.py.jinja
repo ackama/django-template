@@ -259,7 +259,11 @@ def run_image(
     _title("Running Docker image 🐳")
 
     tag = tag or _build_data(ctx).tag
-    network = network or f"{ROOT_DIR.name}_default"
+    # `None` means "not provided", so fall back to the local compose network. An
+    # explicit empty string (e.g. an unset `job.container.network` under act)
+    # means "no usable network", so we omit `--network` and use the default bridge.
+    if network is None:
+        network = f"{ROOT_DIR.name}_default"
     env_file = env_file or ".env"
     database_url = database_url or "postgres://dev:dev_password@db:5432/dev"
 
@@ -268,7 +272,7 @@ def run_image(
         "--rm",
         "-it",
         "-p 8000:8000",
-        f"--network {network}",
+        *([f"--network {network}"] if network else []),
         f"-e DATABASE_URL={database_url}",
         f"--env-file {env_file}",
         f"{PACKAGE}:{tag}",

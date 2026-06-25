@@ -34,6 +34,13 @@ called `.copier-answers.yml`.
 Running the copier command will create a new project in the folder specified
 with `<project_folder>`.
 
+Once the project is created, install its dependencies:
+
+```shell
+cd <project_folder>
+uvx invoke install
+```
+
 > [!NOTE]
 > Copier has an `update` mode which allows you to change your answers to the setup
 > questions at a later date. Your current project _must_ be under git control for this
