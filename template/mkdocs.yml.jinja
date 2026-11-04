@@ -1,10 +1,6 @@
 site_name: '{{ project_name }}'
-watch:
-  - src/
-  - docs/
-
 theme:
-  name: 'material'
+  variant: classic
   palette:
     primary: 'deep purple'
     accent: 'deep purple'
@@ -27,16 +23,8 @@ markdown_extensions:
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:zensical.extensions.emoji.twemoji
+      emoji_generator: !!python/name:zensical.extensions.emoji.to_svg
 
 plugins:
-  - mkdocstrings:
-      handlers:
-        python:
-          setup_commands:
-            - import os, sys
-            - sys.path.append("src")
-            - os.environ["DJANGO_SETTINGS_MODULE"] = "{{ project_module }}.main.settings"
-  - tags:
-      tags_file: tags.md
+  - tags

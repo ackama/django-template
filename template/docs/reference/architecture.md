@@ -192,9 +192,7 @@ first will fail intermittently and unpredictably. Keep each test self-contained.
 ## Documentation
 
 The `docs/` folder holds **project-specific documentation** in Markdown, served locally
-via [MkDocs][mkdocs] with the
-[Material][mkdocs-material] theme. Run `inv run-docs` to
-preview it.
+via [Zensical][zensical]. Run `inv run-docs` to preview it.
 
 The documentation is organised according to the
 [Diátaxis][diataxis] framework, which splits docs into four categories based
@@ -268,8 +266,7 @@ the go-to command for running the full QA suite before pushing.
 [factory-boy]: https://factoryboy.readthedocs.io/
 [factories-howto]: ../how-tos/factories.md
 [pytest-fixtures]: https://docs.pytest.org/en/stable/fixture.html
-[mkdocs]: https://www.mkdocs.org/
-[mkdocs-material]: https://squidfunnel.github.io/mkdocs-material/
+[zensical]: https://zensical.org/
 [diataxis]: https://diataxis.fr/
 [adr-0000]: ../decisions/0000-architectural-decision-records.md
 [invoke]: https://www.pyinvoke.org/

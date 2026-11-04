@@ -68,13 +68,8 @@ jobs:
           invoke install --skip-install-playwright
 
       - name: Build the documentation
-        # When running the ci locally using act, MkDocs build fails at "make html" with
-        # `ValueError: ZoneInfo keys may not be absolute paths, got: /UTC.`
-        # It seems to be a timezone related issue that arises from the interaction of the
-        # Python packages babel & zoneinfo.
-        # setting `TZ=UTC` is a work around here to bypass that error.
-        # NOTE: it runs fine when pushing to Github, but unfortunately not in act.
-        # link to issue on act repository: https://github.com/nektos/act/issues/1853
+        # Retain the timezone workaround for local CI runs with act:
+        # https://github.com/nektos/act/issues/1853
         run: TZ=UTC invoke build-docs
 
   run-system-tests:
