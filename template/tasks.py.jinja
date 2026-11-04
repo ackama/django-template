@@ -108,10 +108,7 @@ def lint(ctx, fix=False):
         _title("Linting code")
         ctx.run("uv run ruff format --check src")
         ctx.run("uv run ruff check src")
-        ctx.run(
-            'uv run djangofmt . && git diff --exit-code -- "*.html" || '
-            '(echo "HTML templates are not formatted. Run \'djangofmt\' to fix." && exit 1)'
-        )
+        ctx.run("uv run djangofmt . --check")
         {% if ts_integration %}
         ctx.run("npm run format-check")
         ctx.run("npm run lint")
