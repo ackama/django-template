@@ -1,0 +1,21 @@
+[project]
+site_name = {{ project_name | to_json(ensure_ascii=False) }}
+
+[project.theme]
+palette = { primary = "deep purple", accent = "deep purple" }
+icon = { logo = "material/duck" }
+
+[project.markdown_extensions]
+abbr = {}
+admonition = {}
+def_list = {}
+toc.permalink = true
+pymdownx.snippets.check_paths = true
+pymdownx.highlight.anchor_linenums = true
+pymdownx.superfences.custom_fences = [
+    { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
+pymdownx.emoji.emoji_index = "zensical.extensions.emoji.twemoji"
+pymdownx.emoji.emoji_generator = "zensical.extensions.emoji.to_svg"
+
+[project.plugins.tags]
