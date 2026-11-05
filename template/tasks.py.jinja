@@ -231,7 +231,7 @@ def build_docs(ctx):
     Build the {{ project_module }} documentation
     """
     _title("Building documentation")
-    ctx.run("uv run mkdocs build --strict")
+    ctx.run("uv run zensical build --strict")
 
 
 ###########
@@ -286,7 +286,7 @@ def run_docs(ctx):
     """
     Run the {{ project_module }} documentation locally
     """
-    ctx.run("uv run mkdocs serve")
+    ctx.run("uv run zensical serve")
 
 
 ###########
