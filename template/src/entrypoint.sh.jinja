@@ -5,7 +5,15 @@ UVICORN_LOG_LEVEL="${UVICORN_LOG_LEVEL:-info}"
 UVICORN_WORKERS="${UVICORN_WORKERS:-4}"
 
 serve () {
-    exec uvicorn \
+    local -a server=(uvicorn)
+    if [ "${OTEL_ENABLED:-false}" = "true" ]; then
+        export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE:-{{ project_module }}.main.settings}"
+        export OTEL_EXPORTER_OTLP_PROTOCOL="${OTEL_EXPORTER_OTLP_PROTOCOL:-http/protobuf}"
+        # Avoid exporting logs unless the deployment explicitly opts in.
+        export OTEL_LOGS_EXPORTER="${OTEL_LOGS_EXPORTER:-none}"
+        server=(opentelemetry-instrument uvicorn)
+    fi
+    exec "${server[@]}" \
         --workers="$UVICORN_WORKERS" \
         --lifespan=off \
         --host=0.0.0.0 \
