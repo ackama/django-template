@@ -7,7 +7,10 @@ UVICORN_WORKERS="${UVICORN_WORKERS:-4}"
 serve () {
     local -a server=(uvicorn)
     if [ "${OTEL_ENABLED:-false}" = "true" ]; then
-        # OpenTelemetry instruments Django before Uvicorn imports the ASGI module.
+        # Must be set before opentelemetry-instrument loads: the Django instrumentor
+        # runs before Uvicorn imports the ASGI module, and without a settings module it
+        # calls settings.configure() with empty settings, so asgi.py's setdefault is
+        # ignored and the app runs on Django's defaults.
         export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE:-{{ project_module }}.main.settings}"
         export OTEL_EXPORTER_OTLP_PROTOCOL="${OTEL_EXPORTER_OTLP_PROTOCOL:-http/protobuf}"
         # Avoid exporting logs unless the deployment explicitly opts in.

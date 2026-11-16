@@ -56,7 +56,8 @@ To verify without a collector, set `OTEL_TRACES_EXPORTER=console` and
 are exported periodically. For other processes, including management commands and
 non-Docker servers, launch them with `opentelemetry-instrument` and configure the same
 OpenTelemetry variables. Set `DJANGO_SETTINGS_MODULE` to your project's settings module
-before launching, so Django can be instrumented during startup. Set
+before launching: the Django instrumentor runs at startup and, if it is unset, configures
+Django with empty settings, so the process would not use your project's settings. Set
 `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf` to use the installed OTLP exporter, and set
 `OTEL_LOGS_EXPORTER=none` there as well unless log export
 is intended. Do not apply the instrumentation wrapper twice.
