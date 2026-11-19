@@ -1,0 +1,175 @@
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+
+def test_sentry_reports_uncaught_django_exception():
+    script = """
+import django
+django.setup()
+import sentry_sdk
+from django.conf import settings
+from django.test import Client
+from sentry_sdk.transport import Transport
+
+events = []
+class MemoryTransport(Transport):
+    def capture_envelope(self, envelope):
+        for item in envelope.items:
+            if item.type == "event":
+                events.append(item.get_event())
+
+client = sentry_sdk.get_client()
+client.transport = MemoryTransport()
+response = Client(raise_request_exception=False).get("/sentry-debug/")
+assert response.status_code == 500
+assert len(events) == 1
+assert events[0]["exception"]["values"][-1]["type"] == "ValueError"
+assert events[0]["release"] == "test-release"
+assert "sentry_release=test-release" in settings.SECURE_CSP["report-uri"][0]
+"""
+    env = os.environ | {
+        "DEBUG": "True",
+        "ALLOWED_HOSTS": "testserver",
+        "SECRET_KEY": "test-secret",
+        "GIT_COMMIT_HASH": "test-release",
+        "GIT_COMMIT_TIME": "0",
+        "GIT_COMMIT_COUNT": "0",
+        "DJANGO_SETTINGS_MODULE": "{{ project_module }}.main.settings",
+        "SENTRY_DSN": "https://public@example.com/1",
+        "SENTRY_TRACES_SAMPLE_RATE": "0",
+    }
+    subprocess.run([sys.executable, "-c", script], env=env, check=True)  # noqa: S603
+
+
+def test_opentelemetry_instruments_asgi_and_custom_metrics():
+    script = """
+import asyncio
+from django.core.asgi import get_asgi_application
+from opentelemetry import metrics, trace
+
+async def main():
+    app = get_asgi_application()
+    messages = []
+    first = True
+    async def receive():
+        nonlocal first
+        if first:
+            first = False
+            return {"type": "http.request", "body": b"", "more_body": False}
+        await asyncio.Event().wait()
+    async def send(message):
+        messages.append(message)
+    scope = {
+        "type": "http", "asgi": {"version": "3.0"}, "http_version": "1.1",
+        "method": "GET", "scheme": "http", "path": "/release.json",
+        "raw_path": b"/release.json", "query_string": b"", "root_path": "",
+        "headers": [(b"host", b"testserver")], "client": ("127.0.0.1", 12345),
+        "server": ("testserver", 80),
+    }
+    await app(scope, receive, send)
+    assert messages[0]["status"] == 200
+
+asyncio.run(main())
+with trace.get_tracer("test").start_as_current_span("custom-operation") as span:
+    span.add_event("custom-event")
+metrics.get_meter("test").create_counter("custom.counter").add(1)
+trace.get_tracer_provider().force_flush()
+metrics.get_meter_provider().force_flush()
+"""
+    env = os.environ | {
+        "DEBUG": "False",
+        "ALLOWED_HOSTS": "testserver",
+        "SECRET_KEY": "test-secret",
+        "GIT_COMMIT_HASH": "test-release",
+        "GIT_COMMIT_TIME": "0",
+        "GIT_COMMIT_COUNT": "0",
+        "SENTRY_DSN": "",
+        "OTEL_SERVICE_NAME": "observability-test",
+        "DJANGO_SETTINGS_MODULE": "{{ project_module }}.main.settings",
+        "OTEL_TRACES_EXPORTER": "console",
+        "OTEL_METRICS_EXPORTER": "console",
+        "OTEL_LOGS_EXPORTER": "none",
+    }
+    result = subprocess.run(  # noqa: S603
+        [
+            str(Path(sys.executable).with_name("opentelemetry-instrument")),
+            sys.executable,
+            "-c",
+            script,
+        ],
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert '"name": "GET release.json"' in result.stdout
+    assert '"name": "custom-operation"' in result.stdout
+    assert '"name": "custom-event"' in result.stdout
+    assert '"name": "custom.counter"' in result.stdout
+
+
+def test_otlp_http_exporters_initialize():
+    script = """
+from opentelemetry import metrics, trace
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.trace import TracerProvider
+assert isinstance(trace.get_tracer_provider(), TracerProvider)
+assert isinstance(metrics.get_meter_provider(), MeterProvider)
+"""
+    env = os.environ | {
+        "DJANGO_SETTINGS_MODULE": "{{ project_module }}.main.settings",
+        "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
+        "OTEL_TRACES_EXPORTER": "otlp",
+        "OTEL_METRICS_EXPORTER": "otlp",
+        "OTEL_LOGS_EXPORTER": "none",
+        "SENTRY_DSN": "",
+    }
+    result = subprocess.run(  # noqa: S603
+        [
+            str(Path(sys.executable).with_name("opentelemetry-instrument")),
+            sys.executable,
+            "-c",
+            script,
+        ],
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert "Failed to auto initialize" not in result.stderr
+
+
+@pytest.mark.parametrize("enabled", [False, True])
+def test_entrypoint_instruments_only_when_enabled(tmp_path, enabled):
+    uvicorn = tmp_path / "uvicorn"
+    uvicorn.write_text(
+        '#!/bin/bash\nprintf "server:%s:%s:%s\\n" '
+        '"${OTEL_LOGS_EXPORTER-unset}" "${DJANGO_SETTINGS_MODULE-unset}" '
+        '"${OTEL_EXPORTER_OTLP_PROTOCOL-unset}"\n'
+    )
+    uvicorn.chmod(0o755)
+    instrument = tmp_path / "opentelemetry-instrument"
+    instrument.write_text('#!/bin/bash\necho instrumented\nexec "$@"\n')
+    instrument.chmod(0o755)
+    entrypoint = Path(__file__).resolve().parents[3] / "entrypoint.sh"
+    env = os.environ | {
+        "PATH": f"{tmp_path}:{os.environ['PATH']}",
+        "OTEL_ENABLED": "true" if enabled else "false",
+    }
+    env.pop("OTEL_LOGS_EXPORTER", None)
+    env.pop("DJANGO_SETTINGS_MODULE", None)
+    env.pop("OTEL_EXPORTER_OTLP_PROTOCOL", None)
+    result = subprocess.run(  # noqa: S603
+        ["/bin/bash", str(entrypoint), "run"],
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert ("instrumented" in result.stdout) is enabled
+    expected = "server:none:{{ project_module }}.main.settings:http/protobuf"
+    assert (expected in result.stdout) is enabled
